@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "my-app/**",
+    ".angular/**",
+    ".codex-dev*.log",
   ]),
 ]);
 

@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f8ff;
+  --foreground: #0f172a;
+  --font-geist-sans: "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 @theme inline {
@@ -12,15 +14,123 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 34%),
+    linear-gradient(180deg, #f8fbff 0%, #f4f7fb 100%);
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
+  min-height: 100%;
+  background: transparent;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(96, 165, 250, 0.28);
+  color: var(--foreground);
+}
+
+.builder-theme {
+  background: var(--builder-page);
+  color: var(--builder-foreground);
+  font-family: var(--builder-body-font);
+}
+
+.builder-heading {
+  font-family: var(--builder-heading-font);
+}
+
+.builder-section {
+  position: relative;
+}
+
+.builder-muted {
+  color: var(--builder-muted);
+}
+
+.builder-card {
+  background: var(--builder-card);
+  border: 1px solid var(--builder-border);
+  border-radius: var(--builder-radius-card);
+  box-shadow: var(--builder-shadow);
+}
+
+.builder-soft-card {
+  background: var(--builder-soft);
+  border: 1px solid var(--builder-border);
+  border-radius: calc(var(--builder-radius-card) - 6px);
+}
+
+.builder-soft-panel {
+  background: var(--builder-soft-strong);
+  border: 1px solid var(--builder-border);
+  border-radius: calc(var(--builder-radius-card) - 10px);
+}
+
+.builder-pill {
+  background: var(--builder-soft);
+  border: 1px solid var(--builder-border);
+  border-radius: 999px;
+  color: var(--builder-primary-strong);
+}
+
+.builder-primary-button {
+  background: var(--builder-primary);
+  border-radius: var(--builder-radius-pill);
+  color: white;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.builder-primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--builder-primary) 28%, transparent);
+}
+
+.builder-secondary-button {
+  background: transparent;
+  border: 1px solid var(--builder-border);
+  border-radius: var(--builder-radius-pill);
+  color: var(--builder-foreground);
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.builder-secondary-button:hover {
+  background: var(--builder-soft);
+  transform: translateY(-1px);
+}
+
+.builder-editor {
+  border-radius: 12px;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.builder-editor:hover {
+  background: var(--builder-editor-hover);
+}
+
+.builder-editor:focus {
+  background: var(--builder-editor-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--builder-primary) 35%, transparent);
+}
+
+.builder-dot-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.25) 1px, transparent 0);
+  background-size: 28px 28px;
 }
