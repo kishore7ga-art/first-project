@@ -111,7 +111,7 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
       return;
     }
 
-    if (lower.includes("professional")) {
+    if (lower.includes("professional") || lower.includes("corporate")) {
       const nextBrandKit = normalizeBrandKit({ ...normalizedBrandKit, brandTone: "professional" });
       updateBrandKit({ brandTone: "professional" });
       updateTheme(deriveThemePatchFromBrandKit(nextBrandKit));
@@ -120,6 +120,20 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
         id: `assistant-${Date.now()}`,
         role: "assistant",
         text: "I tightened the page toward a more professional tone with clearer copy and a calmer theme direction.",
+      });
+      setPrompt("");
+      return;
+    }
+
+    if (lower.includes("playful") || lower.includes("creative")) {
+      const nextBrandKit = normalizeBrandKit({ ...normalizedBrandKit, brandTone: "playful" });
+      updateBrandKit({ brandTone: "playful" });
+      updateTheme(deriveThemePatchFromBrandKit(nextBrandKit));
+      replaceCanvasSections(personalizeCanvasSections(canvasSections, nextBrandKit));
+      appendMessage({
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        text: "I pushed the page toward a more playful direction with brighter styling and more expressive copy.",
       });
       setPrompt("");
       return;

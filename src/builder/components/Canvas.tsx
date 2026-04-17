@@ -4,12 +4,16 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Monitor, Smartphone, Tablet } from "lucide-react";
 import { previewWidths } from "@/builder/theme";
+import { analyzeSeo } from "@/builder/seo";
 import { useBuilderStore } from "@/store/useBuilderStore";
+import { cn } from "@/lib/utils";
 import { SortableSection } from "./SortableSection";
 
 export function Canvas() {
   const canvasSections = useBuilderStore((state) => state.canvasSections);
+  const brandKit = useBuilderStore((state) => state.brandKit);
   const previewMode = useBuilderStore((state) => state.previewMode);
+  const seoReport = analyzeSeo(brandKit, canvasSections);
 
   const { setNodeRef, isOver } = useDroppable({
     id: "canvas-droppable",
@@ -31,9 +35,24 @@ export function Canvas() {
 
       <div
         ref={setNodeRef}
-        className="mx-auto transition-all duration-200"
+        className="mx-auto relative transition-all duration-200"
         style={{ width: previewWidths[previewMode] }}
       >
+        <div className="absolute right-4 top-4 z-20">
+          <div
+            className={cn(
+              "rounded-full border px-4 py-2 text-sm font-semibold shadow-lg backdrop-blur",
+              seoReport.score >= 80
+                ? "border-emerald-200 bg-emerald-50/95 text-emerald-700"
+                : seoReport.score >= 60
+                  ? "border-amber-200 bg-amber-50/95 text-amber-700"
+                  : "border-rose-200 bg-rose-50/95 text-rose-700",
+            )}
+          >
+            SEO {seoReport.score}
+          </div>
+        </div>
+
         <div className="rounded-[32px] border border-white/70 bg-white/85 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur">
           <div className="rounded-[24px] border border-slate-200 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
             <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">

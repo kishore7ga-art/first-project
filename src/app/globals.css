@@ -41,11 +41,11 @@ a {
 .builder-theme {
   background: var(--builder-page);
   color: var(--builder-foreground);
-  font-family: var(--builder-body-font);
+  font-family: var(--font-body);
 }
 
 .builder-heading {
-  font-family: var(--builder-heading-font);
+  font-family: var(--font-heading);
 }
 
 .builder-section {
@@ -64,7 +64,7 @@ a {
 }
 
 .builder-soft-card {
-  background: var(--builder-soft);
+  background: color-mix(in srgb, var(--color-secondary) 14%, var(--builder-soft));
   border: 1px solid var(--builder-border);
   border-radius: calc(var(--builder-radius-card) - 6px);
 }
@@ -76,14 +76,14 @@ a {
 }
 
 .builder-pill {
-  background: var(--builder-soft);
+  background: color-mix(in srgb, var(--color-secondary) 16%, var(--builder-soft));
   border: 1px solid var(--builder-border);
   border-radius: 999px;
-  color: var(--builder-primary-strong);
+  color: var(--color-secondary-strong);
 }
 
 .builder-primary-button {
-  background: var(--builder-primary);
+  background: var(--color-primary);
   border-radius: var(--builder-radius-pill);
   color: white;
   transition:
@@ -94,7 +94,7 @@ a {
 
 .builder-primary-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 30px color-mix(in srgb, var(--builder-primary) 28%, transparent);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--color-primary) 28%, transparent);
 }
 
 .builder-secondary-button {

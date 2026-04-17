@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from "react";
+import Image from "next/image";
 import {
   ArrowRight,
   BadgeCheck,
@@ -79,6 +80,45 @@ function Eyebrow({
     <div className="builder-pill inline-flex items-center gap-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]">
       <span className="h-2 w-2 rounded-full bg-[var(--builder-primary)]" />
       <EditableText value={value} onChange={onChange} readOnly={readOnly} />
+    </div>
+  );
+}
+
+function BrandLogo({
+  value,
+  logoUrl,
+  onChange,
+  readOnly = false,
+  className,
+  fallback,
+}: {
+  value: string;
+  logoUrl?: string;
+  onChange: (value: string) => void;
+  readOnly?: boolean;
+  className?: string;
+  fallback?: ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      {logoUrl ? (
+        <Image
+          src={logoUrl}
+          alt={`${value} logo`}
+          width={40}
+          height={40}
+          unoptimized
+          className="h-10 w-10 rounded-[14px] border border-[var(--builder-border)] bg-white object-contain p-1.5"
+        />
+      ) : (
+        fallback ?? null
+      )}
+      <EditableText
+        value={value}
+        onChange={onChange}
+        readOnly={readOnly}
+        className={className}
+      />
     </div>
   );
 }
@@ -593,14 +633,15 @@ function Hero5({ data, updateData, readOnly = false, anchors = [] }: SectionProp
 }
 
 function Navbar1({ data, updateData, readOnly = false, anchors = [] }: SectionProps) {
-  const content = data as { logo: string; links: string[]; cta: string };
+  const content = data as { logo: string; logoUrl?: string; links: string[]; cta: string };
 
   return (
     <Section className="py-4">
       <Container>
         <div className="flex flex-col gap-4 rounded-[24px] border border-[var(--builder-border)] bg-[var(--builder-card)] px-5 py-4 md:flex-row md:items-center md:justify-between">
-          <EditableText
+          <BrandLogo
             value={content.logo}
+            logoUrl={content.logoUrl}
             onChange={(value) => updateData({ logo: value })}
             readOnly={readOnly}
             className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
@@ -636,6 +677,7 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   const content = data as {
     announcement: string;
     logo: string;
+    logoUrl?: string;
     links: string[];
     cta: string;
   };
@@ -652,8 +694,9 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
             />
           </div>
           <div className="flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
-            <EditableText
+            <BrandLogo
               value={content.logo}
+              logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
               className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
@@ -689,6 +732,7 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
 function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionProps) {
   const content = data as {
     logo: string;
+    logoUrl?: string;
     links: string[];
     meta: string;
     cta: string;
@@ -698,17 +742,18 @@ function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
     <Section className="py-5">
       <Container>
         <div className="builder-soft-card flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--builder-primary)] text-white">
-              <Star className="h-4 w-4" />
-            </div>
-            <EditableText
-              value={content.logo}
-              onChange={(value) => updateData({ logo: value })}
-              readOnly={readOnly}
-              className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
-            />
-          </div>
+          <BrandLogo
+            value={content.logo}
+            logoUrl={content.logoUrl}
+            onChange={(value) => updateData({ logo: value })}
+            readOnly={readOnly}
+            fallback={
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--builder-primary)] text-white">
+                <Star className="h-4 w-4" />
+              </div>
+            }
+            className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
+          />
           <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
             {content.links.map((link, index) => (
               <TextLink
@@ -1450,6 +1495,7 @@ function Cta2({ data, updateData, readOnly = false, anchors = [] }: SectionProps
 function Footer1({ data, updateData, readOnly = false, anchors = [] }: SectionProps) {
   const content = data as {
     logo: string;
+    logoUrl?: string;
     tagline: string;
     groups: Array<{ title: string; links: string[] }>;
     copyright: string;
@@ -1460,8 +1506,9 @@ function Footer1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
       <Container className="py-[calc(var(--builder-section-space)_-_1rem)]">
         <div className="grid gap-10 md:grid-cols-[1.2fr_repeat(3,0.8fr)]">
           <div>
-            <EditableText
+            <BrandLogo
               value={content.logo}
+              logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
               className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
@@ -1524,6 +1571,7 @@ function Footer1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
 function Footer2({ data, updateData, readOnly = false, anchors = [] }: SectionProps) {
   const content = data as {
     logo: string;
+    logoUrl?: string;
     summary: string;
     links: string[];
     note: string;
@@ -1534,8 +1582,9 @@ function Footer2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
       <Container className="py-[calc(var(--builder-section-space)_-_1.5rem)]">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div className="max-w-md">
-            <EditableText
+            <BrandLogo
               value={content.logo}
+              logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
               className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
@@ -1578,6 +1627,7 @@ function Footer2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
 function Footer3({ data, updateData, readOnly = false, anchors = [] }: SectionProps) {
   const content = data as {
     logo: string;
+    logoUrl?: string;
     summary: string;
     cta: string;
     columns: Array<{ title: string; links: string[] }>;
@@ -1589,8 +1639,9 @@ function Footer3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
       <Container className="py-[calc(var(--builder-section-space)_-_1rem)]">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div className="max-w-md">
-            <EditableText
+            <BrandLogo
               value={content.logo}
+              logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
               className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"

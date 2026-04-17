@@ -127,17 +127,24 @@ export function BuilderWorkspace({ initialPrompt = "" }: BuilderWorkspaceProps) 
   ]);
 
   const generateContentPass = () => {
-    replaceCanvasSections(personalizeCanvasSections(canvasSections, brandKit));
-    updateBrandKit(getMetaFromBrandKit(brandKit));
+    const currentState = useBuilderStore.getState();
+    replaceCanvasSections(
+      personalizeCanvasSections(currentState.canvasSections, currentState.brandKit),
+    );
+    updateBrandKit(getMetaFromBrandKit(currentState.brandKit));
   };
 
   const applyBrandIdentity = () => {
-    replaceCanvasSections(syncBrandIdentity(canvasSections, brandKit));
-    updateBrandKit(getMetaFromBrandKit(brandKit));
+    const currentState = useBuilderStore.getState();
+    replaceCanvasSections(
+      syncBrandIdentity(currentState.canvasSections, currentState.brandKit),
+    );
+    updateBrandKit(getMetaFromBrandKit(currentState.brandKit));
   };
 
   const fixSeoBasics = () => {
-    updateBrandKit(getMetaFromBrandKit(brandKit));
+    const currentState = useBuilderStore.getState();
+    updateBrandKit(getMetaFromBrandKit(currentState.brandKit));
   };
 
   const handleDragStart = (event: DragStartEvent) => {

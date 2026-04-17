@@ -1,16 +1,114 @@
-import type { SectionBlueprint, SectionType } from "@/builder/types";
+import type {
+  SectionBlueprint,
+  SectionKit,
+  SectionStyle,
+  SectionType,
+} from "@/builder/types";
 
-function buildSection(
-  blueprint: Omit<SectionBlueprint, "description" | "tags" | "preview"> & {
-    description: string;
-    tags: string[];
-    preview: SectionBlueprint["preview"];
-  },
-) {
+type SectionSeed = Omit<SectionBlueprint, "marketplace">;
+
+function buildSection(blueprint: SectionSeed) {
   return blueprint;
 }
 
-export const availableSections: SectionBlueprint[] = [
+function hashValue(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) % 1000003;
+  }
+
+  return hash;
+}
+
+function uniqueStyles(...styles: Array<SectionStyle | null>) {
+  return Array.from(new Set(styles.filter(Boolean))) as SectionStyle[];
+}
+
+const premiumSectionIds = new Set([
+  "hero-3",
+  "hero-4",
+  "features-4",
+  "pricing-3",
+  "footer-3",
+]);
+
+export const sectionKits: SectionKit[] = [
+  {
+    id: "startup-kit",
+    name: "Startup Kit",
+    description: "A clean launch stack for SaaS and product-led homepages.",
+    tagline: "Fast-moving startup sections with a balanced conversion path.",
+    access: "free",
+    styles: ["minimal", "corporate"],
+    sectionIds: ["navbar-1", "hero-1", "features-1", "pricing-1", "cta-1", "footer-1"],
+    priceLabel: "Free",
+    themePatch: {
+      primaryColor: "#2563eb",
+      secondaryColor: "#14b8a6",
+      fontPairId: "studio-sans",
+      borderRadius: "md",
+      spacing: "normal",
+      mode: "light",
+    },
+  },
+  {
+    id: "agency-kit",
+    name: "Agency Kit",
+    description: "Sharper editorial blocks for service brands and pitch sites.",
+    tagline: "For agencies that want polished storytelling with softer surfaces.",
+    access: "premium",
+    styles: ["minimal", "corporate"],
+    sectionIds: ["navbar-3", "hero-5", "features-3", "cta-1", "footer-2"],
+    priceLabel: "$29",
+    themePatch: {
+      primaryColor: "#0f766e",
+      secondaryColor: "#fb7185",
+      fontPairId: "editorial",
+      borderRadius: "sm",
+      spacing: "spacious",
+      mode: "light",
+    },
+  },
+  {
+    id: "saas-dark-kit",
+    name: "SaaS Dark Kit",
+    description: "High-contrast sections for product launches with proof-heavy storytelling.",
+    tagline: "Bold dark-mode surfaces tuned for trust, metrics, and premium pricing.",
+    access: "premium",
+    styles: ["dark", "bold", "corporate"],
+    sectionIds: ["navbar-2", "hero-3", "features-4", "pricing-3", "cta-2", "footer-1"],
+    priceLabel: "$39",
+    themePatch: {
+      primaryColor: "#8b5cf6",
+      secondaryColor: "#0ea5e9",
+      fontPairId: "contrast-slab",
+      borderRadius: "lg",
+      spacing: "normal",
+      mode: "dark",
+    },
+  },
+  {
+    id: "portfolio-kit",
+    name: "Portfolio Kit",
+    description: "Editorial sections for designers, creators, and boutique studios.",
+    tagline: "Minimal structure with a softer, more playful presentation.",
+    access: "free",
+    styles: ["minimal", "playful"],
+    sectionIds: ["navbar-3", "hero-5", "features-2", "cta-1", "footer-2"],
+    priceLabel: "Free",
+    themePatch: {
+      primaryColor: "#ec4899",
+      secondaryColor: "#f59e0b",
+      fontPairId: "craft",
+      borderRadius: "lg",
+      spacing: "spacious",
+      mode: "light",
+    },
+  },
+];
+
+const sectionSeeds: SectionSeed[] = [
   buildSection({
     id: "navbar-1",
     type: "Navbar",
@@ -25,6 +123,7 @@ export const availableSections: SectionBlueprint[] = [
     },
     defaultData: {
       logo: "Northstar",
+      logoUrl: "",
       links: ["Product", "Solutions", "Pricing", "Company"],
       cta: "Start free",
     },
@@ -44,6 +143,7 @@ export const availableSections: SectionBlueprint[] = [
     defaultData: {
       announcement: "Spring release: shared workspaces are live.",
       logo: "Pulsekit",
+      logoUrl: "",
       links: ["Overview", "Templates", "Pricing"],
       cta: "Book demo",
     },
@@ -62,6 +162,7 @@ export const availableSections: SectionBlueprint[] = [
     },
     defaultData: {
       logo: "Luma",
+      logoUrl: "",
       links: ["Home", "Work", "Journal", "Contact"],
       meta: "Available for select launches",
       cta: "See plans",
@@ -468,6 +569,7 @@ export const availableSections: SectionBlueprint[] = [
     },
     defaultData: {
       logo: "Northstar",
+      logoUrl: "",
       tagline: "A website builder made for teams who care about craft and momentum.",
       groups: [
         { title: "Product", links: ["Builder", "Templates", "Themes"] },
@@ -491,6 +593,7 @@ export const availableSections: SectionBlueprint[] = [
     },
     defaultData: {
       logo: "Luma",
+      logoUrl: "",
       summary: "Designed for polished launches, built for fast-moving teams.",
       links: ["Privacy", "Terms", "Status", "Contact"],
       note: "Now serving creative teams in 18 countries.",
@@ -510,6 +613,7 @@ export const availableSections: SectionBlueprint[] = [
     },
     defaultData: {
       logo: "Pulsekit",
+      logoUrl: "",
       summary: "Weekly ideas for better product pages, sharper launches, and calmer workflows.",
       cta: "Join newsletter",
       columns: [
@@ -520,6 +624,66 @@ export const availableSections: SectionBlueprint[] = [
     },
   }),
 ];
+
+function deriveStyles(section: SectionSeed) {
+  const tags = new Set(section.tags);
+
+  return uniqueStyles(
+    tags.has("minimal") || tags.has("editorial") || tags.has("clean") || tags.has("focused")
+      ? "minimal"
+      : null,
+    tags.has("high-contrast") || tags.has("gradient") || tags.has("premium")
+      ? "bold"
+      : null,
+    tags.has("high-contrast") || tags.has("gradient") ? "dark" : null,
+    tags.has("friendly") || tags.has("community") || tags.has("newsletter") || tags.has("rounded")
+      ? "playful"
+      : null,
+    tags.has("saas") ||
+      tags.has("product") ||
+      tags.has("trust") ||
+      tags.has("b2b") ||
+      tags.has("enterprise") ||
+      tags.has("metrics") ||
+      tags.has("proof")
+      ? "corporate"
+      : null,
+    section.type === "Pricing" || section.type === "Navbar" ? "corporate" : null,
+  );
+}
+
+const kitMembership = new Map<string, string[]>();
+
+for (const kit of sectionKits) {
+  for (const sectionId of kit.sectionIds) {
+    const current = kitMembership.get(sectionId) ?? [];
+    current.push(kit.id);
+    kitMembership.set(sectionId, current);
+  }
+}
+
+function createMarketplaceMeta(section: SectionSeed) {
+  const seed = hashValue(section.id);
+  const rating = 4.4 + (seed % 6) / 10;
+  const reviews = 18 + (seed % 90);
+  const usageCount = 1600 + (seed % 26000);
+
+  return {
+    access: premiumSectionIds.has(section.id) ? "premium" : "free",
+    styles: deriveStyles(section),
+    frameworks: ["React", "Tailwind", "HTML"],
+    darkMode: true,
+    rating: Number(rating.toFixed(1)),
+    reviews,
+    usageCount,
+    kitIds: kitMembership.get(section.id) ?? [],
+  };
+}
+
+export const availableSections: SectionBlueprint[] = sectionSeeds.map((section) => ({
+  ...section,
+  marketplace: createMarketplaceMeta(section),
+}));
 
 export const starterBlueprintIds = [
   "navbar-1",
@@ -537,6 +701,14 @@ export const sectionCategoryOrder: SectionType[] = [
   "Pricing",
   "CTA",
   "Footer",
+];
+
+export const sectionStyleOrder: SectionStyle[] = [
+  "minimal",
+  "bold",
+  "dark",
+  "playful",
+  "corporate",
 ];
 
 export const sectionBlueprintMap = Object.fromEntries(

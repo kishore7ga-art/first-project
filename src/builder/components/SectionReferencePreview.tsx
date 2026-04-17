@@ -58,23 +58,25 @@ function hashValue(value: string) {
 }
 
 function getPalette(blueprint: SectionBlueprint) {
+  const styles = new Set(blueprint.marketplace.styles);
+
   if (
-    blueprint.tags.includes("premium") ||
-    blueprint.tags.includes("gradient") ||
-    blueprint.tags.includes("high-contrast")
+    styles.has("dark") ||
+    styles.has("bold") ||
+    blueprint.tags.includes("premium")
   ) {
     return previewPalettes[2];
   }
 
-  if (blueprint.tags.includes("friendly") || blueprint.tags.includes("community")) {
+  if (styles.has("playful") || blueprint.tags.includes("community")) {
     return previewPalettes[1];
   }
 
-  if (blueprint.tags.includes("editorial") || blueprint.tags.includes("minimal")) {
+  if (styles.has("minimal") || blueprint.tags.includes("editorial")) {
     return previewPalettes[0];
   }
 
-  if (blueprint.tags.includes("brand") || blueprint.tags.includes("launch")) {
+  if (styles.has("corporate") || blueprint.tags.includes("launch")) {
     return previewPalettes[3];
   }
 

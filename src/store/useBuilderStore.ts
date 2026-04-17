@@ -89,6 +89,7 @@ function slugifyProjectName(projectName: string) {
 
 const defaultTheme: ThemeSettings = {
   primaryColor: "#2563eb",
+  secondaryColor: "#14b8a6",
   fontPairId: "studio-sans",
   borderRadius: "md",
   spacing: "normal",
@@ -97,6 +98,7 @@ const defaultTheme: ThemeSettings = {
 
 const defaultBrandKit: BrandKit = {
   companyName: "Northstar",
+  logoUrl: "",
   websiteTopic: "AI website builder",
   audience: "modern product teams",
   uniqueValue: "turn ideas into polished launch pages without slowing engineering down",
@@ -142,6 +144,43 @@ function getHydratedCanvasSections(
   });
 
   return validSections.length > 0 ? deepClone(validSections) : createStarterSections();
+}
+
+function getHydratedTheme(state?: Pick<BuilderState, "theme">): ThemeSettings {
+  return {
+    ...defaultTheme,
+    ...(state?.theme ?? {}),
+  };
+}
+
+function getHydratedBrandKit(state?: Pick<BuilderState, "brandKit">): BrandKit {
+  return {
+    ...defaultBrandKit,
+    ...(state?.brandKit ?? {}),
+  };
+}
+
+function getHydratedPublishedProjects(
+  state?: Pick<BuilderState, "publishedProjects">,
+): Record<string, PublishedProject> {
+  const projects = state?.publishedProjects ?? {};
+
+  return Object.fromEntries(
+    Object.entries(projects).map(([slug, project]) => [
+      slug,
+      {
+        ...project,
+        theme: {
+          ...defaultTheme,
+          ...project.theme,
+        },
+        brandKit: {
+          ...defaultBrandKit,
+          ...project.brandKit,
+        },
+      },
+    ]),
+  );
 }
 
 export const useBuilderStore = create<BuilderState>()(
@@ -343,6 +382,9 @@ export const useBuilderStore = create<BuilderState>()(
         builderStoreApi?.setState({
           hydrated: true,
           canvasSections: getHydratedCanvasSections(state),
+          theme: getHydratedTheme(state),
+          brandKit: getHydratedBrandKit(state),
+          publishedProjects: getHydratedPublishedProjects(state),
         });
       },
     },

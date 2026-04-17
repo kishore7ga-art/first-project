@@ -3,11 +3,60 @@
 import { MoonStar, Palette, SunMedium, Type, X } from "lucide-react";
 import { colorPresets, fontPairs } from "@/builder/theme";
 import { useBuilderStore } from "@/store/useBuilderStore";
-import { cn } from "@/lib/utils";
+import { cn, normalizeHexColor } from "@/lib/utils";
 
 interface ThemePanelProps {
   open: boolean;
   onClose: () => void;
+}
+
+interface ColorFieldProps {
+  fallback: string;
+  label: string;
+  description: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function ColorField({
+  fallback,
+  label,
+  description,
+  value,
+  onChange,
+}: ColorFieldProps) {
+  const safeValue = normalizeHexColor(value, fallback);
+
+  return (
+    <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-slate-900">{label}</div>
+          <div className="mt-1 text-xs leading-5 text-slate-500">{description}</div>
+        </div>
+        <span
+          className="mt-0.5 h-10 w-10 rounded-2xl border border-slate-200"
+          style={{ backgroundColor: safeValue }}
+        />
+      </div>
+
+      <div className="mt-4 flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-3 py-2">
+        <input
+          type="color"
+          value={safeValue}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-10 w-10 rounded-full border-0 bg-transparent"
+        />
+        <input
+          type="text"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onBlur={(event) => onChange(normalizeHexColor(event.target.value, fallback))}
+          className="w-full bg-transparent text-sm font-medium text-slate-700 outline-none"
+        />
+      </div>
+    </div>
+  );
 }
 
 export function ThemePanel({ open, onClose }: ThemePanelProps) {
@@ -41,7 +90,7 @@ export function ThemePanel({ open, onClose }: ThemePanelProps) {
         <div className="mb-6 flex items-center justify-between">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-              Theme panel
+              Global Theme
             </div>
             <h3 className="mt-2 text-2xl font-semibold text-slate-950">
               Tune the whole site
@@ -64,9 +113,9 @@ export function ThemePanel({ open, onClose }: ThemePanelProps) {
                 <Palette className="h-4 w-4" />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-slate-900">Primary color</h4>
+                <h4 className="text-sm font-semibold text-slate-900">Design tokens</h4>
                 <p className="text-xs text-slate-500">
-                  Recolor buttons, accents, and highlighted surfaces.
+                  Primary and secondary colors map across every section instantly.
                 </p>
               </div>
             </div>
@@ -76,10 +125,14 @@ export function ThemePanel({ open, onClose }: ThemePanelProps) {
                 <button
                   key={preset.value}
                   type="button"
-                  onClick={() => updateTheme({ primaryColor: preset.value })}
+                  onClick={() =>
+                    updateTheme({
+                      primaryColor: preset.value,
+                    })
+                  }
                   className={cn(
                     "rounded-[20px] border bg-white p-2 text-left shadow-sm transition",
-                    theme.primaryColor === preset.value
+                    normalizeHexColor(theme.primaryColor, preset.value) === preset.value
                       ? "border-slate-900"
                       : "border-slate-200 hover:border-slate-300",
                   )}
@@ -95,21 +148,20 @@ export function ThemePanel({ open, onClose }: ThemePanelProps) {
               ))}
             </div>
 
-            <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Custom hex color
-            </label>
-            <div className="mt-2 flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm">
-              <input
-                type="color"
+            <div className="mt-4 grid gap-4">
+              <ColorField
+                fallback="#2563eb"
+                label="Primary color"
+                description="Buttons, emphasis, and active surfaces."
                 value={theme.primaryColor}
-                onChange={(event) => updateTheme({ primaryColor: event.target.value })}
-                className="h-10 w-10 rounded-full border-0 bg-transparent"
+                onChange={(value) => updateTheme({ primaryColor: value })}
               />
-              <input
-                type="text"
-                value={theme.primaryColor}
-                onChange={(event) => updateTheme({ primaryColor: event.target.value })}
-                className="w-full bg-transparent text-sm font-medium text-slate-700 outline-none"
+              <ColorField
+                fallback="#14b8a6"
+                label="Secondary color"
+                description="Soft backgrounds, cards, and supporting accents."
+                value={theme.secondaryColor}
+                onChange={(value) => updateTheme({ secondaryColor: value })}
               />
             </div>
           </section>
@@ -122,7 +174,7 @@ export function ThemePanel({ open, onClose }: ThemePanelProps) {
               <div>
                 <h4 className="text-sm font-semibold text-slate-900">Font pairing</h4>
                 <p className="text-xs text-slate-500">
-                  Swap the heading and body voice across the canvas.
+                  Set `--font-heading` and `--font-body` across the full canvas.
                 </p>
               </div>
             </div>
@@ -161,7 +213,7 @@ export function ThemePanel({ open, onClose }: ThemePanelProps) {
               <div>
                 <h4 className="text-sm font-semibold text-slate-900">Atmosphere</h4>
                 <p className="text-xs text-slate-500">
-                  Switch the preview between light and dark presentation.
+                  Control light or dark presentation plus density and radius tokens.
                 </p>
               </div>
             </div>

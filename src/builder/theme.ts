@@ -6,6 +6,7 @@ import type {
   PreviewMode,
   ThemeSettings,
 } from "@/builder/types";
+import { normalizeHexColor } from "@/lib/utils";
 
 export const fontPairs: FontPair[] = [
   {
@@ -117,6 +118,7 @@ function clamp(value: number) {
 
 function normalizeHex(color: string) {
   const safe = color.startsWith("#") ? color.slice(1) : color;
+
   if (safe.length === 3) {
     return safe
       .split("")
@@ -170,21 +172,38 @@ export function getBuilderThemeStyles(theme: ThemeSettings): CSSProperties {
   const radius = radiusScale[theme.borderRadius];
   const spacing = spacingScale[theme.spacing];
   const isDark = theme.mode === "dark";
-  const primary = theme.primaryColor;
+  const primary = normalizeHexColor(theme.primaryColor, colorPresets[0].value);
+  const secondary = normalizeHexColor(theme.secondaryColor, colorPresets[2].value);
 
-  const page = isDark ? mixHex(primary, "#020617", 0.9) : mixHex(primary, "#f8fafc", 0.94);
-  const surface = isDark ? mixHex(primary, "#0f172a", 0.85) : "#ffffff";
-  const soft = isDark ? mixHex(primary, "#0f172a", 0.72) : mixHex(primary, "#eff6ff", 0.72);
-  const softStrong = isDark ? mixHex(primary, "#172554", 0.68) : mixHex(primary, "#dbeafe", 0.65);
+  const page = isDark ? mixHex(secondary, "#020617", 0.88) : mixHex(secondary, "#f8fafc", 0.92);
+  const surface = isDark ? mixHex(secondary, "#0f172a", 0.82) : "#ffffff";
+  const soft = isDark ? mixHex(secondary, "#111827", 0.72) : mixHex(secondary, "#ecfeff", 0.58);
+  const softStrong = isDark
+    ? mixHex(primary, secondary, 0.42)
+    : mixHex(secondary, "#dbeafe", 0.44);
   const border = isDark ? "rgba(148, 163, 184, 0.22)" : "rgba(148, 163, 184, 0.26)";
   const foreground = isDark ? "#f8fafc" : "#0f172a";
   const muted = isDark ? "#cbd5e1" : "#475569";
   const editorHover = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(15, 23, 42, 0.05)";
   const editorFocus = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)";
   const primaryStrong = isDark ? shiftHex(primary, 18) : shiftHex(primary, -16);
+  const secondaryStrong = isDark ? shiftHex(secondary, 14) : shiftHex(secondary, -18);
   const primarySoft = isDark ? mixHex(primary, "#ffffff", 0.16) : mixHex(primary, "#ffffff", 0.28);
+  const secondarySoft = isDark
+    ? mixHex(secondary, "#ffffff", 0.14)
+    : mixHex(secondary, "#ffffff", 0.34);
 
   return {
+    "--color-primary": primary,
+    "--color-primary-strong": primaryStrong,
+    "--color-primary-soft": primarySoft,
+    "--color-secondary": secondary,
+    "--color-secondary-strong": secondaryStrong,
+    "--color-secondary-soft": secondarySoft,
+    "--font-heading": fontPair.headingFamily,
+    "--font-body": fontPair.bodyFamily,
+    "--spacing-base": spacing.gap,
+    "--radius-base": radius.card,
     "--builder-primary": primary,
     "--builder-primary-strong": primaryStrong,
     "--builder-primary-soft": primarySoft,

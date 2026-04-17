@@ -8,6 +8,16 @@ export const sectionTypes = [
 ] as const;
 
 export type SectionType = (typeof sectionTypes)[number];
+export const sectionStyles = [
+  "minimal",
+  "bold",
+  "dark",
+  "playful",
+  "corporate",
+] as const;
+export type SectionStyle = (typeof sectionStyles)[number];
+export type SectionAccess = "free" | "premium";
+export type SectionFramework = "React" | "Tailwind" | "HTML";
 
 export const previewModes = ["desktop", "tablet", "mobile"] as const;
 export type PreviewMode = (typeof previewModes)[number];
@@ -15,12 +25,23 @@ export type PreviewMode = (typeof previewModes)[number];
 export type BuilderRadius = "none" | "sm" | "md" | "lg" | "full";
 export type BuilderSpacing = "compact" | "normal" | "spacious";
 export type BuilderMode = "light" | "dark";
-export type BrandTone = "professional" | "friendly" | "bold";
+export type BrandTone = "professional" | "friendly" | "bold" | "playful";
 
 export interface SectionPreviewMeta {
   eyebrow: string;
   title: string;
   detail: string;
+}
+
+export interface SectionMarketplaceMeta {
+  access: SectionAccess;
+  styles: SectionStyle[];
+  frameworks: SectionFramework[];
+  darkMode: boolean;
+  rating: number;
+  reviews: number;
+  usageCount: number;
+  kitIds: string[];
 }
 
 export interface SectionBlueprint {
@@ -32,6 +53,7 @@ export interface SectionBlueprint {
   tags: string[];
   preview: SectionPreviewMeta;
   defaultData: Record<string, unknown>;
+  marketplace: SectionMarketplaceMeta;
 }
 
 export interface CanvasSection {
@@ -44,6 +66,7 @@ export interface CanvasSection {
 
 export interface ThemeSettings {
   primaryColor: string;
+  secondaryColor: string;
   fontPairId: string;
   borderRadius: BuilderRadius;
   spacing: BuilderSpacing;
@@ -52,6 +75,7 @@ export interface ThemeSettings {
 
 export interface BrandKit {
   companyName: string;
+  logoUrl: string;
   websiteTopic: string;
   audience: string;
   uniqueValue: string;
@@ -59,6 +83,18 @@ export interface BrandKit {
   brandTone: BrandTone;
   metaTitle: string;
   metaDescription: string;
+}
+
+export interface SectionKit {
+  id: string;
+  name: string;
+  description: string;
+  tagline: string;
+  access: SectionAccess;
+  styles: SectionStyle[];
+  sectionIds: string[];
+  priceLabel: string;
+  themePatch: Partial<ThemeSettings>;
 }
 
 export interface PublishedProject {

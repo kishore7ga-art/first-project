@@ -1,8 +1,17 @@
 "use client";
 
-import { BadgeInfo, Sparkles, WandSparkles, X } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
+import {
+  BadgeInfo,
+  ImageUp,
+  Sparkles,
+  Trash2,
+  WandSparkles,
+  X,
+} from "lucide-react";
 import { useBuilderStore } from "@/store/useBuilderStore";
-import { cn } from "@/lib/utils";
+import { cn, readFileAsDataUrl } from "@/lib/utils";
 
 interface BrandKitPanelProps {
   open: boolean;
@@ -19,6 +28,28 @@ export function BrandKitPanel({
 }: BrandKitPanelProps) {
   const brandKit = useBuilderStore((state) => state.brandKit);
   const updateBrandKit = useBuilderStore((state) => state.updateBrandKit);
+  const [logoError, setLogoError] = useState("");
+
+  const handleLogoUpload = async (file?: File) => {
+    if (!file) {
+      return;
+    }
+
+    try {
+      setLogoError("");
+      const dataUrl = await readFileAsDataUrl(file);
+      updateBrandKit({ logoUrl: dataUrl });
+      onApplyIdentity();
+    } catch (error) {
+      console.error(error);
+      setLogoError("The logo could not be loaded. Try a PNG, JPG, or SVG file.");
+    }
+  };
+
+  const clearLogo = () => {
+    updateBrandKit({ logoUrl: "" });
+    onApplyIdentity();
+  };
 
   return (
     <div
@@ -64,6 +95,75 @@ export function BrandKitPanel({
         </div>
 
         <div className="space-y-6">
+          <section className="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="rounded-2xl bg-white p-2 text-slate-500 shadow-sm">
+                <ImageUp className="h-4 w-4" />
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-slate-900">Brand asset</h4>
+                <p className="text-xs text-slate-500">
+                  Upload a logo once and it will sync into every navbar and footer section.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-dashed border-slate-300 bg-white p-4">
+              {brandKit.logoUrl ? (
+                <div className="flex items-center gap-4">
+                  <Image
+                    src={brandKit.logoUrl}
+                    alt={`${brandKit.companyName} logo`}
+                    width={64}
+                    height={64}
+                    unoptimized
+                    className="h-16 w-16 rounded-[18px] border border-slate-200 object-contain bg-white p-2"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-slate-900">
+                      {brandKit.companyName} logo ready
+                    </div>
+                    <div className="mt-1 text-xs leading-5 text-slate-500">
+                      It will appear in compatible navbar and footer blocks.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={clearLogo}
+                    className="rounded-full bg-slate-100 p-2 text-slate-500 transition hover:bg-slate-200"
+                    aria-label="Remove uploaded logo"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex cursor-pointer items-center gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-slate-300 hover:bg-white">
+                  <div className="rounded-2xl bg-slate-900 p-3 text-white">
+                    <ImageUp className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-slate-900">
+                      Upload logo
+                    </div>
+                    <div className="mt-1 text-xs leading-5 text-slate-500">
+                      PNG, JPG, or SVG stored locally in this MVP.
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(event) => void handleLogoUpload(event.target.files?.[0])}
+                  />
+                </label>
+              )}
+
+              {logoError ? (
+                <div className="mt-3 text-xs font-medium text-rose-600">{logoError}</div>
+              ) : null}
+            </div>
+          </section>
+
           <section className="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
             <div className="mb-4 flex items-center gap-3">
               <div className="rounded-2xl bg-white p-2 text-slate-500 shadow-sm">
@@ -144,8 +244,8 @@ export function BrandKitPanel({
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              {(["professional", "friendly", "bold"] as const).map((tone) => (
+            <div className="grid grid-cols-2 gap-3">
+              {(["professional", "friendly", "bold", "playful"] as const).map((tone) => (
                 <button
                   key={tone}
                   type="button"
@@ -165,7 +265,9 @@ export function BrandKitPanel({
                       ? "Clear and credible"
                       : tone === "friendly"
                         ? "Warm and approachable"
-                        : "Confident and punchy"}
+                        : tone === "bold"
+                          ? "Confident and punchy"
+                          : "Colorful and expressive"}
                   </div>
                 </button>
               ))}
@@ -206,7 +308,7 @@ export function BrandKitPanel({
               >
                 <div className="text-sm font-semibold text-slate-900">Apply brand identity</div>
                 <div className="mt-1 text-xs leading-5 text-slate-500">
-                  Sync company name and CTA labels across the current sections.
+                  Sync company name, logo, and CTA labels across the current sections.
                 </div>
               </button>
 

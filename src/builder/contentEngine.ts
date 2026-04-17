@@ -42,6 +42,13 @@ const toneProfiles: Record<
     mood: "bold",
     proof: "dramatic",
   },
+  playful: {
+    badge: "Made for",
+    adjective: "joyful",
+    tempo: "lightly",
+    mood: "playful",
+    proof: "memorable",
+  },
 };
 
 function titleCase(value: string) {
@@ -68,6 +75,7 @@ function hashValue(value: string) {
 
 export function normalizeBrandKit(brandKit: Partial<BrandKit>): BrandKit {
   const companyName = brandKit.companyName?.trim() || "Northstar";
+  const logoUrl = brandKit.logoUrl?.trim() || "";
   const websiteTopic = brandKit.websiteTopic?.trim() || "AI website builder";
   const audience = brandKit.audience?.trim() || "modern product teams";
   const uniqueValue =
@@ -84,6 +92,7 @@ export function normalizeBrandKit(brandKit: Partial<BrandKit>): BrandKit {
 
   return {
     companyName,
+    logoUrl,
     websiteTopic,
     audience,
     uniqueValue,
@@ -108,8 +117,23 @@ function pickColorForTone(brandTone: BrandTone) {
       return "#059669";
     case "bold":
       return "#be185d";
+    case "playful":
+      return "#ec4899";
     default:
       return "#2563eb";
+  }
+}
+
+function pickSecondaryColorForTone(brandTone: BrandTone) {
+  switch (brandTone) {
+    case "friendly":
+      return "#14b8a6";
+    case "bold":
+      return "#6366f1";
+    case "playful":
+      return "#f59e0b";
+    default:
+      return "#14b8a6";
   }
 }
 
@@ -119,6 +143,8 @@ function pickFontForTone(brandTone: BrandTone) {
       return "craft";
     case "bold":
       return "contrast-slab";
+    case "playful":
+      return "geometric";
     default:
       return "monument";
   }
@@ -127,9 +153,15 @@ function pickFontForTone(brandTone: BrandTone) {
 export function deriveThemePatchFromBrandKit(brandKit: BrandKit): ThemePatch {
   return {
     primaryColor: pickColorForTone(brandKit.brandTone),
+    secondaryColor: pickSecondaryColorForTone(brandKit.brandTone),
     fontPairId: pickFontForTone(brandKit.brandTone),
     mode: brandKit.brandTone === "bold" ? "dark" : "light",
-    borderRadius: brandKit.brandTone === "professional" ? "sm" : "md",
+    borderRadius:
+      brandKit.brandTone === "professional"
+        ? "sm"
+        : brandKit.brandTone === "playful"
+          ? "lg"
+          : "md",
   };
 }
 
@@ -249,6 +281,7 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
     case "navbar-1":
       return {
         logo: brandKit.companyName,
+        logoUrl: brandKit.logoUrl,
         links: ["Overview", "Use cases", "Pricing", "Contact"],
         cta: brandKit.ctaLabel,
       };
@@ -256,12 +289,14 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
       return {
         announcement: `${tone.badge} ${audience} building ${topic} websites faster this season.`,
         logo: brandKit.companyName,
+        logoUrl: brandKit.logoUrl,
         links: ["Product", "Templates", "Pricing"],
         cta: brandKit.ctaLabel,
       };
     case "navbar-3":
       return {
         logo: brandKit.companyName,
+        logoUrl: brandKit.logoUrl,
         links: ["Work", "Process", "Pricing", "Contact"],
         meta: `${titleCase(brandKit.brandTone)} tone active`,
         cta: brandKit.ctaLabel,
@@ -431,6 +466,7 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
     case "footer-1":
       return {
         logo: brandKit.companyName,
+        logoUrl: brandKit.logoUrl,
         tagline: `${brandKit.companyName} helps ${audience} present ${topic} offers with a ${tone.adjective} story and a faster publishing workflow.`,
         groups: [
           { title: "Product", links: ["Builder", "Themes", "Publishing"] },
@@ -442,6 +478,7 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
     case "footer-2":
       return {
         logo: brandKit.companyName,
+        logoUrl: brandKit.logoUrl,
         summary: `${brandKit.companyName} brings a ${tone.mood} system to ${topic} pages for ${audience}.`,
         links: ["Privacy", "Terms", "Status", "Contact"],
         note: `${titleCase(brandKit.brandTone)} tone configured for this project.`,
@@ -449,6 +486,7 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
     case "footer-3":
       return {
         logo: brandKit.companyName,
+        logoUrl: brandKit.logoUrl,
         summary: `Insights, examples, and launch ideas for ${audience} building better ${topic} websites.`,
         cta: "Join the newsletter",
         columns: [
@@ -480,6 +518,7 @@ export function syncBrandIdentity(sections: CanvasSection[], partialBrandKit: Pa
 
     if ("logo" in nextData) {
       nextData.logo = brandKit.companyName;
+      nextData.logoUrl = brandKit.logoUrl;
     }
 
     if ("cta" in nextData && typeof nextData.cta === "string") {
@@ -547,6 +586,16 @@ const promptProfiles = [
     keywords: ["friendly", "community", "human", "creator", "newsletter"],
     tags: ["friendly", "community", "newsletter"],
     ids: ["navbar-3", "features-2", "footer-3"],
+  },
+  {
+    keywords: ["playful", "fun", "joyful", "colorful", "creative"],
+    tags: ["friendly", "community", "rounded", "editorial"],
+    ids: ["navbar-3", "hero-5", "features-2", "footer-3"],
+  },
+  {
+    keywords: ["corporate", "professional", "executive", "serious"],
+    tags: ["trust", "saas", "product", "metrics", "b2b"],
+    ids: ["navbar-1", "hero-2", "features-4", "pricing-1", "footer-1"],
   },
   {
     keywords: ["saas", "software", "app", "startup", "product"],
@@ -666,6 +715,10 @@ function scoreBlueprintForPrompt(
     score += 12;
   }
 
+  if (promptIncludes(prompt, blueprint.marketplace.styles)) {
+    score += 5;
+  }
+
   if (brandKit.brandTone === "bold") {
     score += blueprint.tags.some((tag) => ["premium", "gradient", "high-contrast"].includes(tag))
       ? 3
@@ -684,6 +737,12 @@ function scoreBlueprintForPrompt(
       : 0;
   }
 
+  if (brandKit.brandTone === "playful") {
+    score += blueprint.tags.some((tag) => ["friendly", "community", "editorial"].includes(tag))
+      ? 3
+      : 0;
+  }
+
   score += (hashValue(`${prompt}:${blueprint.id}`) % 7) / 10;
 
   return score;
@@ -697,7 +756,10 @@ function pickBlueprintForType(
 ) {
   const preferredIds = getTypePreferredIds(type, prompt);
   const candidates = availableSections.filter(
-    (section) => section.type === type && !usedIds.has(section.id),
+    (section) =>
+      section.marketplace.access === "free" &&
+      section.type === type &&
+      !usedIds.has(section.id),
   );
 
   return candidates.sort((first, second) => {
@@ -706,6 +768,15 @@ function pickBlueprintForType(
 
     return secondScore - firstScore || first.name.localeCompare(second.name);
   })[0];
+}
+
+function hasUnusedEligibleSection(type: SectionType, usedIds: Set<string>) {
+  return availableSections.some(
+    (section) =>
+      section.marketplace.access === "free" &&
+      section.type === type &&
+      !usedIds.has(section.id),
+  );
 }
 
 function buildBlueprintIdsFromPrompt(prompt: string, brandKit: BrandKit) {
@@ -730,9 +801,7 @@ function buildBlueprintIdsFromPrompt(prompt: string, brandKit: BrandKit) {
     if (
       type === "Features" &&
       (wantsDetailed || wantsStory || wantsProof) &&
-      availableSections.some(
-        (section) => section.type === "Features" && !usedIds.has(section.id),
-      )
+      hasUnusedEligibleSection("Features", usedIds)
     ) {
       const extraFeature = pickBlueprintForType("Features", prompt, brandKit, usedIds);
 
@@ -745,7 +814,7 @@ function buildBlueprintIdsFromPrompt(prompt: string, brandKit: BrandKit) {
     if (
       type === "CTA" &&
       wantsDetailed &&
-      availableSections.some((section) => section.type === "CTA" && !usedIds.has(section.id))
+      hasUnusedEligibleSection("CTA", usedIds)
     ) {
       const extraCta = pickBlueprintForType("CTA", prompt, brandKit, usedIds);
 
@@ -769,11 +838,15 @@ export function buildDraftFromPrompt(prompt: string, brandKit: Partial<BrandKit>
       brandKit.companyName && brandKit.companyName !== "Northstar"
         ? brandKit.companyName
         : titleCase(detectedTopic.split(" ").slice(0, 2).join(" ")) || "Northstar",
-    brandTone: lowerPrompt.includes("friendly")
-      ? "friendly"
-      : lowerPrompt.includes("bold")
-        ? "bold"
-        : brandKit.brandTone,
+    brandTone: lowerPrompt.includes("playful") || lowerPrompt.includes("creative")
+      ? "playful"
+      : lowerPrompt.includes("friendly")
+        ? "friendly"
+        : lowerPrompt.includes("bold")
+          ? "bold"
+          : lowerPrompt.includes("corporate") || lowerPrompt.includes("professional")
+            ? "professional"
+            : brandKit.brandTone,
   });
 
   const dark = lowerPrompt.includes("dark");
