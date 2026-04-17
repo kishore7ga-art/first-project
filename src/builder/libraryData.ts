@@ -1,6 +1,7 @@
 import type {
   SectionBlueprint,
   SectionKit,
+  SectionMarketplaceMeta,
   SectionStyle,
   SectionType,
 } from "@/builder/types";
@@ -662,7 +663,7 @@ for (const kit of sectionKits) {
   }
 }
 
-function createMarketplaceMeta(section: SectionSeed) {
+function createMarketplaceMeta(section: SectionSeed): SectionMarketplaceMeta {
   const seed = hashValue(section.id);
   const rating = 4.4 + (seed % 6) / 10;
   const reviews = 18 + (seed % 90);
