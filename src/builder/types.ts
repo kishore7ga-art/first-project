@@ -14,6 +14,12 @@ export const sectionStyles = [
   "dark",
   "playful",
   "corporate",
+  "gradient",
+  "light",
+  "terminal",
+  "gold",
+  "glassmorphism",
+  "colorful",
 ] as const;
 export type SectionStyle = (typeof sectionStyles)[number];
 export type SectionAccess = "free" | "premium";
@@ -46,6 +52,7 @@ export interface SectionMarketplaceMeta {
 
 export interface SectionBlueprint {
   id: string;
+  variantOf?: string;
   type: SectionType;
   name: string;
   description: string;

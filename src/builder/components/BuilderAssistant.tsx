@@ -33,7 +33,9 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
   const setProjectName = useBuilderStore((state) => state.setProjectName);
 
   const [prompt, setPrompt] = useState("");
+  const [lastPrompt, setLastPrompt] = useState("");
   const [isRunning, setIsRunning] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [messages, setMessages] = useState<AssistantMessage[]>([
     {
       id: "intro",
@@ -54,6 +56,8 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
       return;
     }
 
+    setErrorMessage("");
+    setLastPrompt(trimmed);
     const lower = trimmed.toLowerCase();
     appendMessage({
       id: `user-${Date.now()}`,
@@ -198,10 +202,13 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
         });
       } catch (error) {
         console.error(error);
+        setErrorMessage(
+          "The AI provider hit a snag, so the builder kept your current page in place.",
+        );
         appendMessage({
           id: `assistant-${Date.now()}`,
           role: "assistant",
-          text: "I hit a problem generating that draft. Try a shorter prompt or rerun it once more.",
+          text: "I hit a problem generating that draft. The current page stayed intact, and you can try again with a shorter prompt.",
         });
       } finally {
         setIsRunning(false);
@@ -222,7 +229,7 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
   return (
     <div
       className={cn(
-        "pointer-events-none fixed bottom-24 right-6 z-40 w-[min(92vw,420px)] transition",
+        "pointer-events-none fixed bottom-4 left-3 right-3 z-40 w-auto transition sm:bottom-24 sm:left-auto sm:right-6 sm:w-[min(92vw,420px)]",
         open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
       )}
       aria-hidden={!open}
@@ -271,6 +278,20 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
 
         <div className="border-t border-slate-200 px-5 py-4">
           <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-3">
+            {errorMessage ? (
+              <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+                <div>{errorMessage}</div>
+                {lastPrompt ? (
+                  <button
+                    type="button"
+                    onClick={() => setPrompt(lastPrompt)}
+                    className="mt-2 font-semibold text-rose-800 underline decoration-rose-300 underline-offset-2"
+                  >
+                    Restore last prompt
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
             <textarea
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
@@ -296,12 +317,12 @@ export function BuilderAssistant({ open, onClose }: BuilderAssistantProps) {
                 {isRunning ? (
                   <>
                     <LoaderCircle className="mr-2 inline h-4 w-4 animate-spin" />
-                    Running
+                    Generating
                   </>
                 ) : (
                   <>
                     <CornerDownLeft className="mr-2 inline h-4 w-4" />
-                    Run
+                    Generate Website
                   </>
                 )}
               </button>

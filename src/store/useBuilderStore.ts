@@ -16,14 +16,28 @@ import type {
   ThemeSettings,
 } from "@/builder/types";
 
-interface BuilderState {
-  hydrated: boolean;
+type BuilderLibraryTab = "templates" | "sections";
+
+interface BuilderSnapshot {
   projectName: string;
   previewMode: PreviewMode;
   canvasSections: CanvasSection[];
   theme: ThemeSettings;
   brandKit: BrandKit;
   lastEditedAt: string;
+}
+
+interface BuilderState {
+  hydrated: boolean;
+  projectName: string;
+  previewMode: PreviewMode;
+  activeTab: BuilderLibraryTab;
+  canvasSections: CanvasSection[];
+  theme: ThemeSettings;
+  brandKit: BrandKit;
+  lastEditedAt: string;
+  history: BuilderSnapshot[];
+  future: BuilderSnapshot[];
   publishedProjects: Record<string, PublishedProject>;
   addSection: (blueprint: SectionBlueprint, index?: number) => void;
   duplicateSection: (id: string) => void;
@@ -35,7 +49,10 @@ interface BuilderState {
   updateTheme: (partialTheme: Partial<ThemeSettings>) => void;
   updateBrandKit: (partialBrandKit: Partial<BrandKit>) => void;
   setPreviewMode: (mode: PreviewMode) => void;
+  setActiveTab: (tab: BuilderLibraryTab) => void;
   setProjectName: (name: string) => void;
+  undo: () => void;
+  redo: () => void;
   clearCanvas: () => void;
   resetToStarter: () => void;
   publishProject: () => string;
@@ -45,6 +62,7 @@ type PersistedBuilderState = Pick<
   BuilderState,
   | "projectName"
   | "previewMode"
+  | "activeTab"
   | "canvasSections"
   | "theme"
   | "brandKit"
@@ -77,6 +95,24 @@ function createStarterSections() {
 
 function touchState() {
   return new Date().toISOString();
+}
+
+function createSnapshot(state: BuilderState): BuilderSnapshot {
+  return {
+    projectName: state.projectName,
+    previewMode: state.previewMode,
+    canvasSections: deepClone(state.canvasSections),
+    theme: deepClone(state.theme),
+    brandKit: deepClone(state.brandKit),
+    lastEditedAt: state.lastEditedAt,
+  };
+}
+
+function pushHistory(state: BuilderState) {
+  return {
+    history: [...state.history.slice(-49), createSnapshot(state)],
+    future: [],
+  };
 }
 
 function slugifyProjectName(projectName: string) {
@@ -117,10 +153,13 @@ const initialState = {
   hydrated: false,
   projectName: "Spring launch page",
   previewMode: "desktop" as PreviewMode,
+  activeTab: "sections" as BuilderLibraryTab,
   canvasSections: initialCanvasSections,
   theme: defaultTheme,
   brandKit: defaultBrandKit,
   lastEditedAt: touchState(),
+  history: [] as BuilderSnapshot[],
+  future: [] as BuilderSnapshot[],
   publishedProjects: {} as Record<string, PublishedProject>,
 };
 
@@ -203,6 +242,7 @@ export const useBuilderStore = create<BuilderState>()(
             }
 
             return {
+              ...pushHistory(state),
               canvasSections: nextSections,
               lastEditedAt: touchState(),
             };
@@ -221,6 +261,7 @@ export const useBuilderStore = create<BuilderState>()(
             nextSections.splice(index + 1, 0, duplicate);
 
             return {
+              ...pushHistory(state),
               canvasSections: nextSections,
               lastEditedAt: touchState(),
             };
@@ -228,6 +269,7 @@ export const useBuilderStore = create<BuilderState>()(
 
         removeSection: (id) =>
           set((state) => ({
+            ...pushHistory(state),
             canvasSections: state.canvasSections.filter((section) => section.id !== id),
             lastEditedAt: touchState(),
           })),
@@ -248,6 +290,7 @@ export const useBuilderStore = create<BuilderState>()(
             nextSections.splice(newIndex, 0, moved);
 
             return {
+              ...pushHistory(state),
               canvasSections: nextSections,
               lastEditedAt: touchState(),
             };
@@ -271,19 +314,22 @@ export const useBuilderStore = create<BuilderState>()(
             nextSections.splice(targetIndex, 0, moved);
 
             return {
+              ...pushHistory(state),
               canvasSections: nextSections,
               lastEditedAt: touchState(),
             };
           }),
 
         replaceCanvasSections: (sections) =>
-          set({
+          set((state) => ({
+            ...pushHistory(state),
             canvasSections: deepClone(sections),
             lastEditedAt: touchState(),
-          }),
+          })),
 
         updateSectionData: (id, partialData) =>
           set((state) => ({
+            ...pushHistory(state),
             canvasSections: state.canvasSections.map((section) =>
               section.id === id
                 ? { ...section, data: { ...section.data, ...deepClone(partialData) } }
@@ -294,39 +340,83 @@ export const useBuilderStore = create<BuilderState>()(
 
         updateTheme: (partialTheme) =>
           set((state) => ({
+            ...pushHistory(state),
             theme: { ...state.theme, ...partialTheme },
             lastEditedAt: touchState(),
           })),
 
         updateBrandKit: (partialBrandKit) =>
           set((state) => ({
+            ...pushHistory(state),
             brandKit: { ...state.brandKit, ...partialBrandKit },
             lastEditedAt: touchState(),
           })),
 
         setPreviewMode: (mode) => set({ previewMode: mode }),
 
+        setActiveTab: (tab) => set({ activeTab: tab }),
+
         setProjectName: (name) =>
-          set({
+          set((state) => ({
+            ...pushHistory(state),
             projectName: name || "Untitled project",
             lastEditedAt: touchState(),
+          })),
+
+        undo: () =>
+          set((state) => {
+            const previous = state.history.at(-1);
+
+            if (!previous) {
+              return state;
+            }
+
+            const current = createSnapshot(state);
+
+            return {
+              ...state,
+              ...deepClone(previous),
+              history: state.history.slice(0, -1),
+              future: [current, ...state.future].slice(0, 50),
+              lastEditedAt: touchState(),
+            };
+          }),
+
+        redo: () =>
+          set((state) => {
+            const next = state.future[0];
+
+            if (!next) {
+              return state;
+            }
+
+            return {
+              ...state,
+              ...deepClone(next),
+              history: [...state.history.slice(-49), createSnapshot(state)],
+              future: state.future.slice(1),
+              lastEditedAt: touchState(),
+            };
           }),
 
         clearCanvas: () =>
-          set({
+          set((state) => ({
+            ...pushHistory(state),
             canvasSections: [],
             lastEditedAt: touchState(),
-          }),
+          })),
 
         resetToStarter: () =>
-          set({
+          set((state) => ({
+            ...pushHistory(state),
             canvasSections: createStarterSections(),
             theme: defaultTheme,
             brandKit: defaultBrandKit,
             previewMode: "desktop",
+            activeTab: "sections",
             projectName: "Spring launch page",
             lastEditedAt: touchState(),
-          }),
+          })),
 
         publishProject: () => {
           let slug = "";
@@ -364,6 +454,7 @@ export const useBuilderStore = create<BuilderState>()(
       partialize: (state) => ({
         projectName: state.projectName,
         previewMode: state.previewMode,
+        activeTab: state.activeTab,
         canvasSections: state.canvasSections,
         theme: state.theme,
         brandKit: state.brandKit,
@@ -379,13 +470,16 @@ export const useBuilderStore = create<BuilderState>()(
           builderStorage?.removeItem(builderStorageKey);
         }
 
-        builderStoreApi?.setState({
-          hydrated: true,
-          canvasSections: getHydratedCanvasSections(state),
-          theme: getHydratedTheme(state),
-          brandKit: getHydratedBrandKit(state),
-          publishedProjects: getHydratedPublishedProjects(state),
-        });
+          builderStoreApi?.setState({
+            hydrated: true,
+            activeTab: state?.activeTab ?? "sections",
+            canvasSections: getHydratedCanvasSections(state),
+            theme: getHydratedTheme(state),
+            brandKit: getHydratedBrandKit(state),
+            history: [],
+            future: [],
+            publishedProjects: getHydratedPublishedProjects(state),
+          });
       },
     },
   ),

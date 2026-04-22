@@ -63,20 +63,41 @@ function getPalette(blueprint: SectionBlueprint) {
   if (
     styles.has("dark") ||
     styles.has("bold") ||
+    styles.has("terminal") ||
     blueprint.tags.includes("premium")
   ) {
     return previewPalettes[2];
   }
 
-  if (styles.has("playful") || blueprint.tags.includes("community")) {
+  if (
+    styles.has("playful") ||
+    styles.has("gradient") ||
+    styles.has("colorful") ||
+    blueprint.tags.includes("community") ||
+    blueprint.tags.includes("gradient") ||
+    blueprint.tags.includes("colorful")
+  ) {
     return previewPalettes[1];
   }
 
-  if (styles.has("minimal") || blueprint.tags.includes("editorial")) {
+  if (
+    styles.has("minimal") ||
+    styles.has("light") ||
+    styles.has("glassmorphism") ||
+    blueprint.tags.includes("editorial") ||
+    blueprint.tags.includes("glass") ||
+    blueprint.tags.includes("blur")
+  ) {
     return previewPalettes[0];
   }
 
-  if (styles.has("corporate") || blueprint.tags.includes("launch")) {
+  if (
+    styles.has("corporate") ||
+    styles.has("gold") ||
+    blueprint.tags.includes("launch") ||
+    blueprint.tags.includes("gold") ||
+    blueprint.tags.includes("luxury")
+  ) {
     return previewPalettes[3];
   }
 

@@ -26,6 +26,347 @@ function uniqueStyles(...styles: Array<SectionStyle | null>) {
   return Array.from(new Set(styles.filter(Boolean))) as SectionStyle[];
 }
 
+function uniqueStrings(values: Array<string | undefined | null>) {
+  return Array.from(new Set(values.filter(Boolean))) as string[];
+}
+
+function deepClone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+type SectionVariantProfile = {
+  slug: string;
+  label: string;
+  description: string;
+  detail: string;
+  styles: SectionStyle[];
+  tags: string[];
+};
+
+const sectionVariantProfiles: SectionVariantProfile[] = [
+  {
+    slug: "minimal-light",
+    label: "Minimal Light",
+    description: "An airy, low-noise take that feels calm on mobile.",
+    detail: "clean spacing and lighter visual rhythm",
+    styles: ["minimal", "light"],
+    tags: ["minimal", "light", "clean"],
+  },
+  {
+    slug: "bold-dark",
+    label: "Bold Dark",
+    description: "High-contrast presentation with stronger emphasis.",
+    detail: "strong contrast and sharper emphasis",
+    styles: ["bold", "dark"],
+    tags: ["bold", "dark", "high-contrast"],
+  },
+  {
+    slug: "gradient",
+    label: "Gradient",
+    description: "A vivid launch direction with more color energy.",
+    detail: "gradient accents and brighter transitions",
+    styles: ["gradient", "colorful"],
+    tags: ["gradient", "colorful", "vibrant"],
+  },
+  {
+    slug: "glassmorphism",
+    label: "Glassmorphism",
+    description: "A frosted shell with softer surfaces and blur.",
+    detail: "frosted panes and translucent depth",
+    styles: ["glassmorphism", "light"],
+    tags: ["glassmorphism", "glass", "blur"],
+  },
+  {
+    slug: "terminal",
+    label: "Terminal",
+    description: "A code-forward direction with compact rhythm.",
+    detail: "terminal styling and technical clarity",
+    styles: ["terminal", "dark"],
+    tags: ["terminal", "code", "dark"],
+  },
+  {
+    slug: "gold-luxury",
+    label: "Gold Luxury",
+    description: "A premium editorial finish with warmer highlights.",
+    detail: "gold accents and luxurious contrast",
+    styles: ["gold", "bold"],
+    tags: ["gold", "luxury", "premium"],
+  },
+  {
+    slug: "playful-color",
+    label: "Playful Color",
+    description: "Brighter, friendlier, and more expressive.",
+    detail: "playful color blocks and softer motion",
+    styles: ["playful", "colorful"],
+    tags: ["playful", "colorful", "community"],
+  },
+  {
+    slug: "editorial",
+    label: "Editorial",
+    description: "Magazine-like spacing with more breathing room.",
+    detail: "editorial pace and refined hierarchy",
+    styles: ["minimal", "corporate"],
+    tags: ["editorial", "story", "focused"],
+  },
+  {
+    slug: "split-proof",
+    label: "Split Proof",
+    description: "A balanced split layout tuned for trust and proof.",
+    detail: "split-screen structure with more proof cues",
+    styles: ["corporate", "dark"],
+    tags: ["split", "trust", "b2b"],
+  },
+  {
+    slug: "bento-stack",
+    label: "Bento Stack",
+    description: "Modular, card-led arrangements with more rhythm.",
+    detail: "bento-style modular sections and card stacks",
+    styles: ["colorful", "playful"],
+    tags: ["bento", "colorful", "playful"],
+  },
+];
+
+function createVariantDefaultData(section: SectionSeed, profile: SectionVariantProfile, index: number) {
+  const next = deepClone(section.defaultData) as Record<string, unknown>;
+  const variantLabel = profile.label.toLowerCase();
+
+  next.variantLabel = profile.label;
+  next.variantIndex = index + 1;
+  next.variantNote = profile.detail;
+
+  switch (section.type) {
+    case "Navbar": {
+      if (typeof next.announcement === "string") {
+        next.announcement = `${next.announcement} ${profile.detail}.`;
+      }
+
+      if (typeof next.meta === "string") {
+        next.meta = `${next.meta} ${profile.label}.`;
+      }
+
+      if (Array.isArray(next.links)) {
+        next.links = [...(next.links as string[])];
+      }
+
+      break;
+    }
+    case "Hero": {
+      if (typeof next.subtitle === "string") {
+        next.subtitle = `${next.subtitle} ${profile.detail}.`;
+      }
+
+      if (typeof next.quote === "string") {
+        next.quote = `${next.quote} ${profile.label.toLowerCase()} variant.`;
+      }
+
+      if (typeof next.mediaQuery === "string") {
+        next.mediaQuery = `${next.mediaQuery} ${variantLabel}`;
+      }
+
+      if (typeof next.mediaAlt === "string") {
+        next.mediaAlt = `${next.mediaAlt} (${profile.label.toLowerCase()})`;
+      }
+
+      if (Array.isArray(next.bulletPoints)) {
+        const bulletPoints = next.bulletPoints as string[];
+        next.bulletPoints = uniqueStrings([
+          ...bulletPoints.slice(0, 2),
+          `Refined for a ${variantLabel} layout`,
+          ...bulletPoints.slice(2),
+        ]);
+      }
+
+      if (Array.isArray(next.metrics)) {
+        const metrics = next.metrics as Array<{ value: string; label: string }>;
+        next.metrics = metrics.map((metric, metricIndex) =>
+          metricIndex === 0
+            ? {
+                ...metric,
+                label: `${metric.label} with ${variantLabel} pacing`,
+              }
+            : metric,
+        );
+      }
+
+      break;
+    }
+    case "Features": {
+      if (typeof next.intro === "string") {
+        next.intro = `${next.intro} ${profile.detail}.`;
+      }
+
+      if (typeof next.subheading === "string") {
+        next.subheading = `${next.subheading} ${profile.detail}.`;
+      }
+
+      if (Array.isArray(next.points)) {
+        const points = next.points as string[];
+        next.points = uniqueStrings([
+          ...points.slice(0, 3),
+          `Optimized for ${variantLabel} browsing`,
+          ...points.slice(3),
+        ]);
+      }
+
+      if (Array.isArray(next.features)) {
+        const features = next.features as Array<{ title: string; description: string }>;
+        next.features = features.map((feature, featureIndex) =>
+          featureIndex === 0
+            ? {
+                ...feature,
+                description: `${feature.description} ${profile.detail}.`,
+              }
+            : feature,
+        );
+      }
+
+      if (Array.isArray(next.highlights)) {
+        const highlights = next.highlights as Array<{
+          label: string;
+          title: string;
+          description: string;
+        }>;
+        next.highlights = highlights.map((item, itemIndex) =>
+          itemIndex === 0
+            ? {
+                ...item,
+                description: `${item.description} ${profile.detail}.`,
+              }
+            : item,
+        );
+      }
+
+      if (Array.isArray(next.stats)) {
+        const stats = next.stats as Array<{ value: string; label: string; detail: string }>;
+        next.stats = stats.map((item, itemIndex) =>
+          itemIndex === 0
+            ? {
+                ...item,
+                detail: `${item.detail} ${profile.detail}.`,
+              }
+            : item,
+        );
+      }
+
+      break;
+    }
+    case "Pricing": {
+      if (typeof next.subtitle === "string") {
+        next.subtitle = `${next.subtitle} ${profile.detail}.`;
+      }
+
+      if (typeof next.billing === "string") {
+        next.billing = `${next.billing} ${profile.label}.`;
+      }
+
+      if (Array.isArray(next.cards)) {
+        const cards = next.cards as Array<{
+          name: string;
+          price: string;
+          description: string;
+          cta: string;
+          featured: boolean;
+          features: string[];
+        }>;
+        next.cards = cards.map((card, cardIndex) =>
+          cardIndex === 0
+            ? {
+                ...card,
+                description: `${card.description} ${profile.detail}.`,
+              }
+            : card,
+        );
+      }
+
+      if (Array.isArray(next.plans)) {
+        const plans = next.plans as Array<{
+          name: string;
+          price: string;
+          audience: string;
+          features: string[];
+        }>;
+        next.plans = plans.map((plan, planIndex) =>
+          planIndex === 0
+            ? {
+                ...plan,
+                audience: `${plan.audience} with ${variantLabel} positioning`,
+              }
+            : plan,
+        );
+      }
+
+      if (Array.isArray(next.benefits)) {
+        const benefits = next.benefits as string[];
+        next.benefits = uniqueStrings([
+          ...benefits.slice(0, 2),
+          `${profile.label} style and structure`,
+          ...benefits.slice(2),
+        ]);
+      }
+
+      break;
+    }
+    case "CTA": {
+      if (typeof next.subtitle === "string") {
+        next.subtitle = `${next.subtitle} ${profile.detail}.`;
+      }
+
+      if (typeof next.proof === "string") {
+        next.proof = `${next.proof} ${profile.label}.`;
+      }
+
+      break;
+    }
+    case "Footer": {
+      if (typeof next.tagline === "string") {
+        next.tagline = `${next.tagline} ${profile.detail}.`;
+      }
+
+      if (typeof next.summary === "string") {
+        next.summary = `${next.summary} ${profile.detail}.`;
+      }
+
+      if (typeof next.note === "string") {
+        next.note = `${next.note} ${profile.label}.`;
+      }
+
+      if (typeof next.copyright === "string") {
+        next.copyright = `${next.copyright} ${profile.label}.`;
+      }
+
+      break;
+    }
+    default:
+      break;
+  }
+
+  return next;
+}
+
+function createSectionVariant(section: SectionSeed, profile: SectionVariantProfile, index: number): SectionSeed {
+  const tags = uniqueStrings([...section.tags, ...profile.tags]);
+
+  return buildSection({
+    ...section,
+    id: `${section.id}-${profile.slug}`,
+    variantOf: section.id,
+    name: `${section.name} ${profile.label}`,
+    description: `${profile.description} ${section.description}`,
+    thumbnail: section.thumbnail,
+    tags,
+    preview: {
+      eyebrow: section.preview.eyebrow,
+      title: `${section.preview.title} ${profile.label}`,
+      detail: `${section.preview.detail} ${profile.detail}`,
+    },
+    defaultData: createVariantDefaultData(section, profile, index),
+  });
+}
+
+function createVariantSections(section: SectionSeed) {
+  return sectionVariantProfiles.map((profile, index) => createSectionVariant(section, profile, index));
+}
+
 const premiumSectionIds = new Set([
   "hero-3",
   "hero-4",
@@ -188,6 +529,8 @@ const sectionSeeds: SectionSeed[] = [
         "Northstar combines planning, handoff, and publishing in one calm workspace.",
       primaryCta: "Start building",
       secondaryCta: "Watch preview",
+      mediaQuery: "launch workspace preview",
+      mediaAlt: "A polished product launch workspace on a phone and desktop",
     },
   }),
   buildSection({
@@ -212,6 +555,8 @@ const sectionSeeds: SectionSeed[] = [
       statValue: "4.9/5",
       statLabel: "Average team satisfaction",
       bulletPoints: ["Shared briefs", "Approval flows", "Instant publish"],
+      mediaQuery: "dashboard preview",
+      mediaAlt: "A clean dashboard preview for a product launch page",
     },
   }),
   buildSection({
@@ -235,6 +580,8 @@ const sectionSeeds: SectionSeed[] = [
       secondaryCta: "Browse examples",
       quote:
         "We rebuilt our launch site in an afternoon and the new page converted 28% better.",
+      mediaQuery: "editorial launch preview",
+      mediaAlt: "An editorial website preview with a polished launch layout",
     },
   }),
   buildSection({
@@ -636,7 +983,9 @@ function deriveStyles(section: SectionSeed) {
     tags.has("high-contrast") || tags.has("gradient") || tags.has("premium")
       ? "bold"
       : null,
-    tags.has("high-contrast") || tags.has("gradient") ? "dark" : null,
+    tags.has("high-contrast") || tags.has("gradient") || tags.has("dark") || tags.has("terminal")
+      ? "dark"
+      : null,
     tags.has("friendly") || tags.has("community") || tags.has("newsletter") || tags.has("rounded")
       ? "playful"
       : null,
@@ -646,9 +995,17 @@ function deriveStyles(section: SectionSeed) {
       tags.has("b2b") ||
       tags.has("enterprise") ||
       tags.has("metrics") ||
-      tags.has("proof")
+      tags.has("proof") ||
+      tags.has("editorial") ||
+      tags.has("split")
       ? "corporate"
       : null,
+    tags.has("gradient") ? "gradient" : null,
+    tags.has("light") || tags.has("clean") || tags.has("minimal") ? "light" : null,
+    tags.has("terminal") || tags.has("code") ? "terminal" : null,
+    tags.has("gold") || tags.has("luxury") ? "gold" : null,
+    tags.has("glassmorphism") || tags.has("glass") || tags.has("blur") ? "glassmorphism" : null,
+    tags.has("colorful") || tags.has("vibrant") || tags.has("bento") ? "colorful" : null,
     section.type === "Pricing" || section.type === "Navbar" ? "corporate" : null,
   );
 }
@@ -681,7 +1038,14 @@ function createMarketplaceMeta(section: SectionSeed): SectionMarketplaceMeta {
   };
 }
 
-export const availableSections: SectionBlueprint[] = sectionSeeds.map((section) => ({
+const generatedVariantSections = sectionSeeds.flatMap((section) =>
+  createVariantSections(section),
+);
+
+export const availableSections: SectionBlueprint[] = [
+  ...sectionSeeds,
+  ...generatedVariantSections,
+].map((section) => ({
   ...section,
   marketplace: createMarketplaceMeta(section),
 }));
@@ -710,6 +1074,12 @@ export const sectionStyleOrder: SectionStyle[] = [
   "dark",
   "playful",
   "corporate",
+  "gradient",
+  "light",
+  "terminal",
+  "gold",
+  "glassmorphism",
+  "colorful",
 ];
 
 export const sectionBlueprintMap = Object.fromEntries(

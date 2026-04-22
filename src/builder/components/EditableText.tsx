@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface EditableTextProps {
@@ -23,13 +23,11 @@ export function EditableText({
   const contentEditableRef = useRef<HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    if (isEditing || !contentEditableRef.current) {
-      return;
-    }
+  useLayoutEffect(() => {
+    if (isEditing || !contentEditableRef.current) return;
 
-    if (contentEditableRef.current.innerText !== value) {
-      contentEditableRef.current.innerText = value;
+    if (contentEditableRef.current.textContent !== value) {
+      contentEditableRef.current.textContent = value;
     }
   }, [isEditing, value]);
 
@@ -46,7 +44,17 @@ export function EditableText({
       ref={contentEditableRef}
       contentEditable
       suppressContentEditableWarning
-      className={cn("builder-editor cursor-text outline-none", "p-1 -m-1", className)}
+      spellCheck={false}
+      autoCorrect="off"
+      autoCapitalize="off"
+      dir="ltr"
+      lang="en"
+      style={{ unicodeBidi: "plaintext" }}
+      className={cn(
+        "builder-editor cursor-text outline-none",
+        "p-1 -m-1",
+        className,
+      )}
       data-placeholder={placeholder}
       onFocus={() => setIsEditing(true)}
       onBlur={(event: React.FocusEvent<HTMLElement>) => {
@@ -68,7 +76,7 @@ export function EditableText({
         event.stopPropagation();
       }}
     >
-      {value}
+      {null}
     </EditableTag>
   );
 }

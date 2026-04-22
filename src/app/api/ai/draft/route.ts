@@ -1,4 +1,4 @@
-import { buildDraftFromPrompt } from "@/builder/contentEngine";
+import { generateDraftWithFallback } from "@/builder/freeTierApis";
 import type { DraftRequestBody, DraftResponseBody } from "@/builder/draftTypes";
 
 export async function POST(request: Request) {
@@ -13,7 +13,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const draft: DraftResponseBody = buildDraftFromPrompt(prompt, body.brandKit ?? {});
+    const draft: DraftResponseBody = await generateDraftWithFallback(
+      prompt,
+      body.brandKit ?? {},
+    );
 
     return Response.json(draft);
   } catch (error) {

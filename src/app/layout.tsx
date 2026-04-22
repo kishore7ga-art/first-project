@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Nexus | Next Gen SaaS",
-  description: "Modern boilerplate for SaaS projects",
+  title: "Sections | Drag and drop website builder",
+  description:
+    "Browse beautiful sections, drag them onto a canvas, remix with AI, and publish polished websites without code.",
 };
 
 export default function RootLayout({
@@ -13,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full scroll-smooth antialiased">
-      <body className="min-h-full bg-white font-sans text-slate-900">{children}</body>
+      <body className="min-h-full bg-[#09090B] font-sans text-zinc-50">{children}</body>
     </html>
   );
 }

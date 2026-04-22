@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { BuilderWorkspace } from "@/builder/BuilderWorkspace";
 
 export const metadata: Metadata = {
@@ -15,6 +16,10 @@ export default async function BuilderPage({
   const initialPrompt = Array.isArray(resolvedSearchParams.prompt)
     ? resolvedSearchParams.prompt[0] ?? ""
     : resolvedSearchParams.prompt ?? "";
+
+  if (!initialPrompt) {
+    redirect("/builder/demo-project");
+  }
 
   return <BuilderWorkspace initialPrompt={initialPrompt} />;
 }

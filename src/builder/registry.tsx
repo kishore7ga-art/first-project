@@ -12,6 +12,7 @@ import type { PageAnchor } from "@/builder/navigation";
 import { resolveSectionHref } from "@/builder/navigation";
 import { EditableText } from "@/builder/components/EditableText";
 import { cn } from "@/lib/utils";
+import { availableSections } from "@/builder/libraryData";
 
 export interface SectionProps {
   anchors?: PageAnchor[];
@@ -44,7 +45,7 @@ function Section({
   return (
     <section
       className={cn(
-        "builder-section border-b border-[var(--builder-border)] bg-[var(--builder-card)]",
+        "builder-section overflow-x-hidden border-b border-[var(--builder-border)] bg-[var(--builder-card)]",
         className,
       )}
     >
@@ -61,7 +62,12 @@ function Container({
   className?: string;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-6xl px-6 md:px-10", className)}>
+    <div
+      className={cn(
+        "mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16",
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -71,13 +77,20 @@ function Eyebrow({
   value,
   onChange,
   readOnly = false,
+  className,
 }: {
   value: string;
   onChange: (value: string) => void;
   readOnly?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="builder-pill inline-flex items-center gap-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]">
+    <div
+      className={cn(
+        "builder-pill inline-flex items-center gap-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]",
+        className,
+      )}
+    >
       <span className="h-2 w-2 rounded-full bg-[var(--builder-primary)]" />
       <EditableText value={value} onChange={onChange} readOnly={readOnly} />
     </div>
@@ -108,7 +121,7 @@ function BrandLogo({
           width={40}
           height={40}
           unoptimized
-          className="h-10 w-10 rounded-[14px] border border-[var(--builder-border)] bg-white object-contain p-1.5"
+          className="h-8 w-8 rounded-[14px] border border-[var(--builder-border)] bg-white object-contain p-1.5 sm:h-10 sm:w-10"
         />
       ) : (
         fallback ?? null
@@ -119,6 +132,99 @@ function BrandLogo({
         readOnly={readOnly}
         className={className}
       />
+    </div>
+  );
+}
+
+function HeroMediaFrame({
+  title,
+  subtitle,
+  imageUrl,
+  imageAlt,
+  imageCredit,
+  mediaQuery,
+}: {
+  title: string;
+  subtitle: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  imageCredit?: string;
+  mediaQuery?: string;
+}) {
+  if (imageUrl) {
+    return (
+      <div className="overflow-hidden rounded-[28px] border border-[var(--builder-border)] bg-[var(--builder-card)] shadow-[var(--builder-shadow)]">
+        <div className="relative aspect-[4/3] w-full">
+          <Image
+            src={imageUrl}
+            alt={imageAlt || title}
+            fill
+            unoptimized
+            loading="lazy"
+            className="object-cover"
+          />
+        </div>
+        <div className="border-t border-[var(--builder-border)] p-4 text-left">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--builder-muted)]">
+            {title}
+          </div>
+          <div className="mt-2 text-sm leading-6 text-[var(--builder-foreground)]">
+            {subtitle}
+          </div>
+          {imageCredit ? (
+            <div className="mt-3 text-[11px] leading-5 text-[var(--builder-muted)]">
+              {imageCredit}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-[28px] border border-[var(--builder-border)] bg-[var(--builder-card)] shadow-[var(--builder-shadow)]">
+      <div className="flex items-center justify-between border-b border-[var(--builder-border)] px-4 py-3">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--builder-muted)]">
+          {title}
+        </div>
+        <span className="rounded-full bg-[var(--builder-soft)] px-3 py-1 text-[11px] font-semibold text-[var(--builder-primary-strong)]">
+          {mediaQuery || "Preview ready"}
+        </span>
+      </div>
+      <div className="grid gap-3 p-4">
+        <div className="rounded-[22px] border border-[var(--builder-border)] bg-[var(--builder-soft)] p-4">
+          <div className="flex items-center justify-between">
+            <div className="h-3 w-24 rounded-full bg-[var(--builder-primary)]" />
+            <div className="h-8 w-20 rounded-full bg-[var(--builder-soft-strong)]" />
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[18px] border border-[var(--builder-border)] bg-[var(--builder-card)] p-3">
+              <div className="h-2 w-16 rounded-full bg-[var(--builder-primary)]" />
+              <div className="mt-3 space-y-2">
+                <div className="h-2.5 w-10/12 rounded-full bg-[var(--builder-soft-strong)]" />
+                <div className="h-2.5 w-8/12 rounded-full bg-[var(--builder-soft-strong)]" />
+                <div className="h-2.5 w-9/12 rounded-full bg-[var(--builder-soft-strong)]" />
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <div className="rounded-[18px] border border-[var(--builder-border)] bg-[var(--builder-card)] p-3">
+                <div className="h-2 w-12 rounded-full bg-[var(--builder-secondary)]" />
+                <div className="mt-3 h-14 rounded-[14px] bg-[var(--builder-soft-strong)]" />
+              </div>
+              <div className="rounded-[18px] border border-[var(--builder-border)] bg-[var(--builder-card)] p-3">
+                <div className="h-2 w-14 rounded-full bg-[var(--builder-secondary)]" />
+                <div className="mt-3 h-10 rounded-[14px] bg-[var(--builder-soft-strong)]" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-between text-[11px] leading-5 text-[var(--builder-muted)]">
+          <span>{subtitle}</span>
+          <span className="whitespace-nowrap rounded-full bg-[var(--builder-soft)] px-3 py-1 font-semibold text-[var(--builder-primary-strong)]">
+            {mediaQuery || "Mobile ready"}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -146,7 +252,7 @@ function PrimaryButton({
     return (
       <Element
         {...(resolvedHref ? { href: resolvedHref } : {})}
-        className="builder-primary-button inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
+        className="builder-primary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
       >
         <span>{value}</span>
         {icon && <ArrowRight className="h-4 w-4" />}
@@ -158,7 +264,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={(event) => event.preventDefault()}
-      className="builder-primary-button inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
+      className="builder-primary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
     >
       <EditableText value={value} onChange={onChange} readOnly={readOnly} />
       {icon && <ArrowRight className="h-4 w-4" />}
@@ -187,7 +293,7 @@ function SecondaryButton({
     return (
       <Element
         {...(resolvedHref ? { href: resolvedHref } : {})}
-        className="builder-secondary-button inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
+        className="builder-secondary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
       >
         <span>{value}</span>
       </Element>
@@ -198,7 +304,7 @@ function SecondaryButton({
     <button
       type="button"
       onClick={(event) => event.preventDefault()}
-      className="builder-secondary-button inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold"
+      className="builder-secondary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
     >
       <EditableText value={value} onChange={onChange} readOnly={readOnly} />
     </button>
@@ -261,7 +367,7 @@ function Heading({
       onChange={onChange}
       readOnly={readOnly}
       className={cn(
-        "builder-heading text-4xl font-semibold leading-tight text-[var(--builder-foreground)] md:text-5xl",
+        "builder-heading text-3xl font-semibold leading-tight tracking-tight text-[var(--builder-foreground)] sm:text-4xl md:text-5xl lg:text-6xl",
         className,
       )}
     />
@@ -285,7 +391,10 @@ function Body({
       value={value}
       onChange={onChange}
       readOnly={readOnly}
-      className={cn("text-base leading-7 text-[var(--builder-muted)]", className)}
+      className={cn(
+        "text-base leading-7 text-[var(--builder-muted)] sm:text-lg md:text-xl",
+        className,
+      )}
     />
   );
 }
@@ -297,44 +406,60 @@ function Hero1({ data, updateData, readOnly = false, anchors = [] }: SectionProp
     subtitle: string;
     primaryCta: string;
     secondaryCta: string;
+    mediaUrl?: string;
+    mediaAlt?: string;
+    mediaCredit?: string;
+    mediaQuery?: string;
   };
 
   return (
     <Section>
-      <Container className="py-[var(--builder-section-space)] text-center">
-        <Eyebrow
-          value={content.eyebrow}
-          onChange={(value) => updateData({ eyebrow: value })}
-          readOnly={readOnly}
-        />
-        <EditableText
-          tagName="h1"
-          value={content.title}
-          onChange={(value) => updateData({ title: value })}
-          readOnly={readOnly}
-          className="builder-heading mx-auto mt-6 max-w-4xl text-5xl font-semibold leading-[1.04] text-[var(--builder-foreground)] md:text-7xl"
-        />
-        <Body
-          value={content.subtitle}
-          onChange={(value) => updateData({ subtitle: value })}
-          readOnly={readOnly}
-          className="mx-auto mt-6 max-w-2xl text-lg"
-        />
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <PrimaryButton
-            anchors={anchors}
-            value={content.primaryCta}
-            onChange={(value) => updateData({ primaryCta: value })}
+      <Container className="grid items-center gap-12 py-[var(--builder-section-space)] text-center lg:grid-cols-[1.05fr_0.95fr] lg:text-left">
+        <div>
+          <Eyebrow
+            value={content.eyebrow}
+            onChange={(value) => updateData({ eyebrow: value })}
             readOnly={readOnly}
-            icon
+            className="mx-auto lg:mx-0"
           />
-          <SecondaryButton
-            anchors={anchors}
-            value={content.secondaryCta}
-            onChange={(value) => updateData({ secondaryCta: value })}
+          <EditableText
+            tagName="h1"
+            value={content.title}
+            onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
+            className="builder-heading mx-auto mt-6 max-w-4xl text-3xl font-semibold leading-[1.04] text-[var(--builder-foreground)] sm:text-4xl md:text-6xl lg:mx-0 lg:text-7xl"
           />
+          <Body
+            value={content.subtitle}
+            onChange={(value) => updateData({ subtitle: value })}
+            readOnly={readOnly}
+            className="mx-auto mt-6 max-w-2xl text-lg lg:mx-0"
+          />
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+            <PrimaryButton
+              anchors={anchors}
+              value={content.primaryCta}
+              onChange={(value) => updateData({ primaryCta: value })}
+              readOnly={readOnly}
+              icon
+            />
+            <SecondaryButton
+              anchors={anchors}
+              value={content.secondaryCta}
+              onChange={(value) => updateData({ secondaryCta: value })}
+              readOnly={readOnly}
+            />
+          </div>
         </div>
+
+        <HeroMediaFrame
+          title={content.mediaQuery || "Launch preview"}
+          subtitle={content.subtitle}
+          imageUrl={content.mediaUrl}
+          imageAlt={content.mediaAlt}
+          imageCredit={content.mediaCredit}
+          mediaQuery={content.mediaQuery}
+        />
       </Container>
     </Section>
   );
@@ -350,6 +475,10 @@ function Hero2({ data, updateData, readOnly = false, anchors = [] }: SectionProp
     statValue: string;
     statLabel: string;
     bulletPoints: string[];
+    mediaUrl?: string;
+    mediaAlt?: string;
+    mediaCredit?: string;
+    mediaQuery?: string;
   };
 
   return (
@@ -366,7 +495,7 @@ function Hero2({ data, updateData, readOnly = false, anchors = [] }: SectionProp
             value={content.title}
             onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
-            className="builder-heading mt-6 text-5xl font-semibold leading-[1.04] text-[var(--builder-foreground)] md:text-6xl"
+            className="builder-heading mt-6 text-3xl font-semibold leading-[1.04] text-[var(--builder-foreground)] sm:text-4xl md:text-5xl lg:text-6xl"
           />
           <Body
             value={content.subtitle}
@@ -391,17 +520,25 @@ function Hero2({ data, updateData, readOnly = false, anchors = [] }: SectionProp
         </div>
 
         <div className="builder-card grid gap-5 p-6">
+          <HeroMediaFrame
+            title={content.mediaQuery || "Dashboard preview"}
+            subtitle={content.statLabel}
+            imageUrl={content.mediaUrl}
+            imageAlt={content.mediaAlt}
+            imageCredit={content.mediaCredit}
+            mediaQuery={content.mediaQuery}
+          />
           <div className="rounded-[24px] bg-[var(--builder-soft)] p-5">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--builder-muted)]">
               Customer proof
             </div>
-            <EditableText
-              tagName="div"
-              value={content.statValue}
-              onChange={(value) => updateData({ statValue: value })}
-              readOnly={readOnly}
-              className="builder-heading mt-3 text-5xl font-semibold text-[var(--builder-foreground)]"
-            />
+          <EditableText
+            tagName="div"
+            value={content.statValue}
+            onChange={(value) => updateData({ statValue: value })}
+            readOnly={readOnly}
+            className="builder-heading mt-3 text-3xl font-semibold text-[var(--builder-foreground)] sm:text-4xl md:text-5xl"
+          />
             <Body
               value={content.statLabel}
               onChange={(value) => updateData({ statLabel: value })}
@@ -445,6 +582,10 @@ function Hero3({ data, updateData, readOnly = false, anchors = [] }: SectionProp
     primaryCta: string;
     secondaryCta: string;
     quote: string;
+    mediaUrl?: string;
+    mediaAlt?: string;
+    mediaCredit?: string;
+    mediaQuery?: string;
   };
 
   return (
@@ -461,7 +602,7 @@ function Hero3({ data, updateData, readOnly = false, anchors = [] }: SectionProp
             value={content.title}
             onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
-            className="builder-heading mt-6 max-w-3xl text-5xl font-semibold leading-[1.02] text-[var(--builder-foreground)] md:text-6xl"
+            className="builder-heading mt-6 max-w-3xl text-3xl font-semibold leading-[1.02] text-[var(--builder-foreground)] sm:text-4xl md:text-5xl lg:text-6xl"
           />
           <Body
             value={content.subtitle}
@@ -486,6 +627,14 @@ function Hero3({ data, updateData, readOnly = false, anchors = [] }: SectionProp
         </div>
 
         <div className="builder-card flex flex-col justify-between gap-6 p-8">
+          <HeroMediaFrame
+            title={content.mediaQuery || "Editorial preview"}
+            subtitle={content.subtitle}
+            imageUrl={content.mediaUrl}
+            imageAlt={content.mediaAlt}
+            imageCredit={content.mediaCredit}
+            mediaQuery={content.mediaQuery}
+          />
           <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[var(--builder-soft)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--builder-primary-strong)]">
             <Sparkles className="h-4 w-4" />
             Customer note
@@ -531,7 +680,7 @@ function Hero4({ data, updateData, readOnly = false, anchors = [] }: SectionProp
             value={content.title}
             onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
-            className="builder-heading mt-6 text-5xl font-semibold leading-[1.04] text-[var(--builder-foreground)] md:text-6xl"
+            className="builder-heading mt-6 text-3xl font-semibold leading-[1.04] text-[var(--builder-foreground)] sm:text-4xl md:text-5xl lg:text-6xl"
           />
           <Body
             value={content.subtitle}
@@ -555,7 +704,7 @@ function Hero4({ data, updateData, readOnly = false, anchors = [] }: SectionProp
           </div>
         </div>
 
-        <div className="mt-12 grid gap-[var(--builder-grid-gap)] md:grid-cols-3">
+        <div className="mt-12 grid gap-[var(--builder-grid-gap)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {content.metrics.map((metric, index) => (
             <div key={`${metric.label}-${index}`} className="builder-card p-6">
               <EditableText
@@ -567,7 +716,7 @@ function Hero4({ data, updateData, readOnly = false, anchors = [] }: SectionProp
                   })
                 }
                 readOnly={readOnly}
-                className="builder-heading text-5xl font-semibold text-[var(--builder-foreground)]"
+                className="builder-heading text-3xl font-semibold text-[var(--builder-foreground)] sm:text-4xl md:text-5xl"
               />
               <EditableText
                 tagName="p"
@@ -610,7 +759,7 @@ function Hero5({ data, updateData, readOnly = false, anchors = [] }: SectionProp
             value={content.title}
             onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
-            className="builder-heading mt-6 text-5xl font-semibold leading-[1.06] text-[var(--builder-foreground)] md:text-6xl"
+            className="builder-heading mt-6 text-3xl font-semibold leading-[1.06] text-[var(--builder-foreground)] sm:text-4xl md:text-5xl lg:text-6xl"
           />
           <Body
             value={content.subtitle}
@@ -638,13 +787,13 @@ function Navbar1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="py-4">
       <Container>
-        <div className="flex flex-col gap-4 rounded-[24px] border border-[var(--builder-border)] bg-[var(--builder-card)] px-5 py-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 rounded-[24px] border border-[var(--builder-border)] bg-[var(--builder-card)] px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
           <BrandLogo
             value={content.logo}
             logoUrl={content.logoUrl}
             onChange={(value) => updateData({ logo: value })}
             readOnly={readOnly}
-            className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
+            className="builder-heading text-lg font-semibold text-[var(--builder-foreground)] sm:text-xl md:text-2xl"
           />
           <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
             {content.links.map((link, index) => (
@@ -693,13 +842,13 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
               readOnly={readOnly}
             />
           </div>
-          <div className="flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
             <BrandLogo
               value={content.logo}
               logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
-              className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
+              className="builder-heading text-lg font-semibold text-[var(--builder-foreground)] sm:text-xl md:text-2xl"
             />
             <div className="flex flex-wrap items-center justify-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
               {content.links.map((link, index) => (
@@ -741,7 +890,7 @@ function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="py-5">
       <Container>
-        <div className="builder-soft-card flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
+        <div className="builder-soft-card flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
           <BrandLogo
             value={content.logo}
             logoUrl={content.logoUrl}
@@ -752,7 +901,7 @@ function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
                 <Star className="h-4 w-4" />
               </div>
             }
-            className="builder-heading text-xl font-semibold text-[var(--builder-foreground)]"
+            className="builder-heading text-lg font-semibold text-[var(--builder-foreground)] sm:text-xl md:text-2xl"
           />
           <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
             {content.links.map((link, index) => (
@@ -814,7 +963,7 @@ function Features1({ data, updateData, readOnly = false }: SectionProps) {
           />
         </div>
 
-        <div className="mt-12 grid gap-[var(--builder-grid-gap)] md:grid-cols-3">
+        <div className="mt-12 grid gap-[var(--builder-grid-gap)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {content.features.map((feature, index) => (
             <div key={`${feature.title}-${index}`} className="builder-card p-6">
               <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--builder-soft)] text-[var(--builder-primary)]">
@@ -829,7 +978,7 @@ function Features1({ data, updateData, readOnly = false }: SectionProps) {
                   })
                 }
                 readOnly={readOnly}
-                className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
+                className="builder-heading text-xl font-semibold text-[var(--builder-foreground)] sm:text-2xl md:text-3xl"
               />
               <EditableText
                 tagName="p"
@@ -932,7 +1081,7 @@ function Features3({ data, updateData, readOnly = false }: SectionProps) {
           />
         </div>
 
-        <div className="mt-12 grid gap-[var(--builder-grid-gap)] md:grid-cols-3">
+        <div className="mt-12 grid gap-[var(--builder-grid-gap)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {content.highlights.map((highlight, index) => (
             <div
               key={`${highlight.label}-${index}`}
@@ -961,7 +1110,7 @@ function Features3({ data, updateData, readOnly = false }: SectionProps) {
                   })
                 }
                 readOnly={readOnly}
-                className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
+                className="builder-heading text-xl font-semibold text-[var(--builder-foreground)] sm:text-2xl md:text-3xl"
               />
               <EditableText
                 tagName="p"
@@ -1008,7 +1157,7 @@ function Features4({ data, updateData, readOnly = false }: SectionProps) {
           />
         </div>
 
-        <div className="mt-12 grid gap-[var(--builder-grid-gap)] lg:grid-cols-3">
+        <div className="mt-12 grid gap-[var(--builder-grid-gap)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {content.stats.map((stat, index) => (
             <div
               key={`${stat.label}-${index}`}
@@ -1023,7 +1172,7 @@ function Features4({ data, updateData, readOnly = false }: SectionProps) {
                   })
                 }
                 readOnly={readOnly}
-                className="builder-heading text-5xl font-semibold text-[var(--builder-foreground)]"
+                className="builder-heading text-3xl font-semibold text-[var(--builder-foreground)] sm:text-4xl md:text-5xl"
               />
               <EditableText
                 tagName="h3"
@@ -1093,7 +1242,7 @@ function Pricing1({ data, updateData, readOnly = false, anchors = [] }: SectionP
           />
         </div>
 
-        <div className="mt-12 grid gap-[var(--builder-grid-gap)] lg:grid-cols-3">
+        <div className="mt-12 grid gap-[var(--builder-grid-gap)] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {content.cards.map((card, index) => (
             <div
               key={`${card.name}-${index}`}
@@ -1112,7 +1261,7 @@ function Pricing1({ data, updateData, readOnly = false, anchors = [] }: SectionP
                     })
                   }
                   readOnly={readOnly}
-                  className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
+                  className="builder-heading text-xl font-semibold text-[var(--builder-foreground)] sm:text-2xl md:text-3xl"
                 />
                 <EditableText
                   tagName="div"
@@ -1123,7 +1272,7 @@ function Pricing1({ data, updateData, readOnly = false, anchors = [] }: SectionP
                     })
                   }
                   readOnly={readOnly}
-                  className="builder-heading mt-4 text-5xl font-semibold text-[var(--builder-foreground)]"
+                  className="builder-heading mt-4 text-3xl font-semibold text-[var(--builder-foreground)] sm:text-4xl md:text-5xl"
                 />
                 <EditableText
                   tagName="p"
@@ -1213,7 +1362,7 @@ function Pricing2({ data, updateData, readOnly = false }: SectionProps) {
           />
         </div>
 
-        <div className="mt-12 grid gap-[var(--builder-grid-gap)] md:grid-cols-2">
+        <div className="mt-12 grid gap-[var(--builder-grid-gap)] grid-cols-1 sm:grid-cols-2">
           {content.plans.map((plan, index) => (
             <div key={`${plan.name}-${index}`} className="builder-card p-6">
               <EditableText
@@ -1225,7 +1374,7 @@ function Pricing2({ data, updateData, readOnly = false }: SectionProps) {
                   })
                 }
                 readOnly={readOnly}
-                className="builder-heading text-3xl font-semibold text-[var(--builder-foreground)]"
+                className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)] sm:text-3xl md:text-4xl"
               />
               <EditableText
                 tagName="div"
@@ -1236,7 +1385,7 @@ function Pricing2({ data, updateData, readOnly = false }: SectionProps) {
                   })
                 }
                 readOnly={readOnly}
-                className="builder-heading mt-4 text-5xl font-semibold text-[var(--builder-foreground)]"
+                className="builder-heading mt-4 text-3xl font-semibold text-[var(--builder-foreground)] sm:text-4xl md:text-5xl"
               />
               <EditableText
                 tagName="p"
@@ -1323,7 +1472,7 @@ function Pricing3({ data, updateData, readOnly = false, anchors = [] }: SectionP
             value={content.price}
             onChange={(value) => updateData({ price: value })}
             readOnly={readOnly}
-            className="builder-heading mt-4 text-6xl font-semibold text-[var(--builder-foreground)]"
+            className="builder-heading mt-4 text-4xl font-semibold text-[var(--builder-foreground)] sm:text-5xl md:text-6xl lg:text-7xl"
           />
           <Body
             value={content.billing}
@@ -1390,7 +1539,7 @@ function Cta1({ data, updateData, readOnly = false, anchors = [] }: SectionProps
             value={content.title}
             onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
-            className="builder-heading mt-6 text-4xl font-semibold text-[var(--builder-foreground)] md:text-5xl"
+            className="builder-heading mt-6 text-2xl font-semibold text-[var(--builder-foreground)] sm:text-3xl md:text-4xl lg:text-5xl"
           />
           <Body
             value={content.subtitle}
@@ -1443,7 +1592,7 @@ function Cta2({ data, updateData, readOnly = false, anchors = [] }: SectionProps
             value={content.title}
             onChange={(value) => updateData({ title: value })}
             readOnly={readOnly}
-            className="builder-heading mt-6 text-4xl font-semibold leading-tight text-white md:text-5xl"
+            className="builder-heading mt-6 text-2xl font-semibold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl"
           />
           <EditableText
             tagName="p"
@@ -1504,14 +1653,14 @@ function Footer1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="bg-[var(--builder-soft)]">
       <Container className="py-[calc(var(--builder-section-space)_-_1rem)]">
-        <div className="grid gap-10 md:grid-cols-[1.2fr_repeat(3,0.8fr)]">
+        <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.2fr_repeat(3,0.8fr)]">
           <div>
             <BrandLogo
               value={content.logo}
               logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
-              className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
+              className="builder-heading text-xl font-semibold text-[var(--builder-foreground)] sm:text-2xl md:text-3xl"
             />
             <Body
               value={content.tagline}
@@ -1580,14 +1729,14 @@ function Footer2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="bg-[var(--builder-card)]">
       <Container className="py-[calc(var(--builder-section-space)_-_1.5rem)]">
-        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-md">
             <BrandLogo
               value={content.logo}
               logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
-              className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
+              className="builder-heading text-xl font-semibold text-[var(--builder-foreground)] sm:text-2xl md:text-3xl"
             />
             <Body
               value={content.summary}
@@ -1637,14 +1786,14 @@ function Footer3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="bg-[var(--builder-soft)]">
       <Container className="py-[calc(var(--builder-section-space)_-_1rem)]">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+        <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
           <div className="max-w-md">
             <BrandLogo
               value={content.logo}
               logoUrl={content.logoUrl}
               onChange={(value) => updateData({ logo: value })}
               readOnly={readOnly}
-              className="builder-heading text-2xl font-semibold text-[var(--builder-foreground)]"
+              className="builder-heading text-xl font-semibold text-[var(--builder-foreground)] sm:text-2xl md:text-3xl"
             />
             <Body
               value={content.summary}
@@ -1711,7 +1860,7 @@ function Footer3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   );
 }
 
-export const Registry: Record<string, FC<SectionProps>> = {
+const baseRegistry: Record<string, FC<SectionProps>> = {
   "navbar-1": Navbar1,
   "navbar-2": Navbar2,
   "navbar-3": Navbar3,
@@ -1733,3 +1882,10 @@ export const Registry: Record<string, FC<SectionProps>> = {
   "footer-2": Footer2,
   "footer-3": Footer3,
 };
+
+export const Registry: Record<string, FC<SectionProps>> = Object.fromEntries(
+  availableSections.map((section) => {
+    const key = section.variantOf ?? section.id;
+    return [section.id, baseRegistry[key] ?? baseRegistry[section.id]];
+  }),
+) as Record<string, FC<SectionProps>>;

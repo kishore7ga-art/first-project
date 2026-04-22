@@ -1,470 +1,493 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Layers3,
-  LoaderCircle,
-  Lock,
-  Search,
-  Sparkles,
-  WandSparkles,
-} from "lucide-react";
-import {
-  availableSections,
-  sectionCategoryOrder,
-  sectionKits,
-  sectionStyleOrder,
-} from "@/builder/libraryData";
+import { useMemo, useState } from "react";
+import { ArrowRight, Search, X } from "lucide-react";
+import { availableSections, sectionBlueprintMap, sectionKits } from "@/builder/libraryData";
 import { createCanvasSectionsFromBlueprintIds } from "@/builder/contentEngine";
-import type { SectionStyle, SectionType } from "@/builder/types";
-import { requestDraftFromPrompt } from "@/builder/draftApi";
+import type { SectionBlueprint, SectionKit } from "@/builder/types";
+import { cn } from "@/lib/utils";
 import { useBuilderStore } from "@/store/useBuilderStore";
 import { SidebarItem } from "./SidebarItem";
-import { cn } from "@/lib/utils";
+import { SectionReferencePreview } from "./SectionReferencePreview";
 
-type AccessFilter = "all" | "free" | "premium" | "kits";
+const categories = [
+  "All",
+  "Heroes",
+  "Navbars",
+  "Features",
+  "Pricing",
+  "Testimonials",
+  "CTA",
+  "FAQ",
+  "Footer",
+  "Team",
+  "Blog",
+  "Contact",
+  "Stats",
+  "Logos",
+  "Gallery",
+  "Timeline",
+  "Backgrounds",
+  "Animations",
+  "Effects",
+  "Banners",
+] as const;
 
-function formatStyleLabel(style: SectionStyle) {
-  return style.charAt(0).toUpperCase() + style.slice(1);
+const styles = [
+  "All",
+  "Dark",
+  "Light",
+  "Gradient",
+  "Minimal",
+  "Bold",
+  "Colorful",
+  "Terminal",
+  "Gold",
+  "Glassmorphism",
+] as const;
+
+const mobileTabs = [
+  { id: "templates", label: "Templates" },
+  { id: "sections", label: "Sections" },
+] as const;
+
+function normalizeCategory(category: string) {
+  if (category === "Heroes") return "Hero";
+  if (category === "Navbars") return "Navbar";
+  return category.replace(/s$/, "");
 }
 
-export function LeftPanel() {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<SectionType | "All">("All");
-  const [activeStyle, setActiveStyle] = useState<SectionStyle | "All">("All");
-  const [activeAccess, setActiveAccess] = useState<AccessFilter>("all");
-  const [ideaPrompt, setIdeaPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatorMessage, setGeneratorMessage] = useState(
-    "Describe any style or niche and the builder will remix the free section set into a fresh draft.",
+function normalizeStyle(style: string) {
+  return style.toLowerCase();
+}
+
+function TemplateCard({
+  kit,
+  onUseTemplate,
+}: {
+  kit: SectionKit;
+  onUseTemplate: (kit: SectionKit) => void;
+}) {
+  const previewBlueprint = sectionBlueprintMap[kit.sectionIds[0]] ?? availableSections[0]!;
+
+  return (
+    <article className="template-card group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900 hover:border-white/20">
+      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
+        <div className="pointer-events-none absolute left-0 top-0 h-[820px] w-[1280px] origin-top-left scale-[0.19] 2xl:scale-[0.205]">
+          <SectionReferencePreview blueprint={previewBlueprint} />
+        </div>
+
+        <div className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+          {kit.access === "free" ? "FREE" : kit.priceLabel}
+        </div>
+      </div>
+
+      <div className="p-3 2xl:p-4">
+        <h3 className="text-sm font-semibold text-white">{kit.name}</h3>
+        <p className="mt-1 max-h-10 overflow-hidden text-xs leading-5 text-white/50">
+          {kit.description}
+        </p>
+
+        <div className="mt-3 flex items-center justify-between text-[11px] text-white/45">
+          <span>{kit.sectionIds.length} sections</span>
+          <span className="uppercase tracking-[0.18em]">{kit.access}</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onUseTemplate(kit)}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-white/90"
+        >
+          Use template
+          <ArrowRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </article>
   );
+}
 
+function TemplatesPanel({
+  onUseTemplate,
+  showHeader = true,
+}: {
+  onUseTemplate: (kit: SectionKit) => void;
+  showHeader?: boolean;
+}) {
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      {showHeader ? (
+        <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
+          <h2 className="text-xs font-semibold tracking-wider text-white/60">TEMPLATES</h2>
+        </div>
+      ) : null}
+
+      <div className="scrollable-column flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 2xl:space-y-4">
+        {sectionKits.map((kit) => (
+          <TemplateCard key={kit.id} kit={kit} onUseTemplate={onUseTemplate} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SectionFilters({
+  search,
+  setSearch,
+  activeCategory,
+  setActiveCategory,
+  activeStyle,
+  setActiveStyle,
+}: {
+  search: string;
+  setSearch: (value: string) => void;
+  activeCategory: (typeof categories)[number];
+  setActiveCategory: (value: (typeof categories)[number]) => void;
+  activeStyle: (typeof styles)[number];
+  setActiveStyle: (value: (typeof styles)[number]) => void;
+}) {
+  return (
+    <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#555]" />
+        <input
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search sections..."
+          className="h-10 w-full rounded-lg border border-[#2A2A2A] bg-[#1A1A1A] pl-9 pr-9 text-sm text-white outline-none placeholder:text-[#555] focus:border-white/20"
+        />
+        {search ? (
+          <button
+            type="button"
+            onClick={() => setSearch("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-[#555] hover:bg-white/5 hover:text-white"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : null}
+      </div>
+
+      <div className="mt-3 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {categories.map((category) => (
+          <button
+            key={category}
+            type="button"
+            onClick={() => setActiveCategory(category)}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition",
+              activeCategory === category
+                ? "bg-white text-black"
+                : "bg-transparent text-zinc-500 hover:text-zinc-200",
+            )}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-[#555]">
+          Style:
+        </span>
+        {styles.map((style) => (
+          <button
+            key={style}
+            type="button"
+            onClick={() => setActiveStyle(style)}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition",
+              activeStyle === style
+                ? "bg-white text-black"
+                : "bg-transparent text-zinc-500 hover:text-zinc-200",
+            )}
+          >
+            {style}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SectionGrid({
+  filteredSections,
+  compact = false,
+  onPreview,
+}: {
+  filteredSections: SectionBlueprint[];
+  compact?: boolean;
+  onPreview: (blueprint: SectionBlueprint) => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-3 2xl:gap-4">
+      {filteredSections.map((blueprint) => (
+        <SidebarItem
+          key={blueprint.id}
+          blueprint={blueprint}
+          compact={compact}
+          onPreview={() => onPreview(blueprint)}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SectionsPanel({
+  filteredSections,
+  search,
+  setSearch,
+  activeCategory,
+  setActiveCategory,
+  activeStyle,
+  setActiveStyle,
+  onPreview,
+  showHeader = true,
+  compactCards = false,
+}: {
+  filteredSections: SectionBlueprint[];
+  search: string;
+  setSearch: (value: string) => void;
+  activeCategory: (typeof categories)[number];
+  setActiveCategory: (value: (typeof categories)[number]) => void;
+  activeStyle: (typeof styles)[number];
+  setActiveStyle: (value: (typeof styles)[number]) => void;
+  onPreview: (blueprint: SectionBlueprint) => void;
+  showHeader?: boolean;
+  compactCards?: boolean;
+}) {
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      {showHeader ? (
+        <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
+          <h2 className="text-xs font-semibold tracking-wider text-white/60">
+            SECTIONS LIBRARY
+          </h2>
+        </div>
+      ) : null}
+
+      <SectionFilters
+        search={search}
+        setSearch={setSearch}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        activeStyle={activeStyle}
+        setActiveStyle={setActiveStyle}
+      />
+
+      <div className="flex-shrink-0 px-4 py-2">
+        <p className="text-xs font-semibold tracking-wider text-white/40">
+          {filteredSections.length} SECTIONS FOUND
+        </p>
+      </div>
+
+      <div className="scrollable-column flex-1 min-h-0 overflow-y-auto px-4 pb-4">
+        <SectionGrid
+          filteredSections={filteredSections}
+          compact={compactCards}
+          onPreview={onPreview}
+        />
+
+        {filteredSections.length === 0 ? (
+          <div className="mt-8 rounded-lg border border-dashed border-white/10 p-5 text-center text-sm leading-6 text-zinc-600">
+            No sections matched. Clear filters or search another style.
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function PreviewModal({
+  blueprint,
+  onClose,
+}: {
+  blueprint: SectionBlueprint | null;
+  onClose: () => void;
+}) {
+  if (!blueprint) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 p-4 backdrop-blur">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-[#101014] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-[0.22em] text-zinc-600">
+              Fullscreen preview
+            </div>
+            <h2 className="mt-1 text-lg font-black text-white">{blueprint.name}</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-2 text-zinc-500 hover:bg-white/5 hover:text-white"
+            aria-label="Close preview"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="bg-[#F4F4F5] p-8">
+          <div className="mx-auto max-w-4xl overflow-hidden bg-white shadow-[0_0_60px_rgba(0,0,0,0.16)]">
+            <SectionReferencePreview blueprint={blueprint} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface LeftPanelProps {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export function LeftPanel({ mobileOpen = false, onMobileClose }: LeftPanelProps) {
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>("All");
+  const [activeStyle, setActiveStyle] = useState<(typeof styles)[number]>("All");
+  const [previewBlueprint, setPreviewBlueprint] = useState<SectionBlueprint | null>(null);
+  const activeTab = useBuilderStore((state) => state.activeTab);
   const brandKit = useBuilderStore((state) => state.brandKit);
-  const setProjectName = useBuilderStore((state) => state.setProjectName);
-  const updateBrandKit = useBuilderStore((state) => state.updateBrandKit);
-  const updateTheme = useBuilderStore((state) => state.updateTheme);
   const replaceCanvasSections = useBuilderStore((state) => state.replaceCanvasSections);
+  const updateTheme = useBuilderStore((state) => state.updateTheme);
+  const setActiveTab = useBuilderStore((state) => state.setActiveTab);
 
-  const aiPresets = [
-    "Build a bold landing page for a fitness coach with proof and pricing",
-    "Create a minimal editorial homepage for a design studio",
-    "Make a playful SaaS site for remote hiring teams",
-  ];
+  const filteredSections = useMemo(() => {
+    const normalizedSearch = search.toLowerCase().trim();
+    const category = normalizeCategory(activeCategory);
+    const style = normalizeStyle(activeStyle);
 
-  const normalizedSearch = search.toLowerCase();
+    return availableSections.filter((section) => {
+      const matchesCategory = activeCategory === "All" || section.type === category;
+      const matchesStyle =
+        activeStyle === "All" ||
+        section.marketplace.styles.some((candidate) => candidate === style);
+      const haystack = [
+        section.name,
+        section.description,
+        section.type,
+        section.tags.join(" "),
+        section.marketplace.styles.join(" "),
+      ]
+        .join(" ")
+        .toLowerCase();
+      const matchesSearch = !normalizedSearch || haystack.includes(normalizedSearch);
 
-  const filteredSections =
-    activeAccess === "kits"
-      ? []
-      : availableSections.filter((section) => {
-          const matchesCategory =
-            activeCategory === "All" ? true : section.type === activeCategory;
-          const matchesStyle =
-            activeStyle === "All" ? true : section.marketplace.styles.includes(activeStyle);
-          const matchesAccess =
-            activeAccess === "all" ? true : section.marketplace.access === activeAccess;
-          const haystack = [
-            section.name,
-            section.description,
-            section.tags.join(" "),
-            section.marketplace.styles.join(" "),
-            section.type,
-          ]
-            .join(" ")
-            .toLowerCase();
-          const matchesSearch = haystack.includes(normalizedSearch);
+      return matchesCategory && matchesStyle && matchesSearch;
+    });
+  }, [activeCategory, activeStyle, search]);
 
-          return matchesCategory && matchesStyle && matchesAccess && matchesSearch;
-        });
-
-  const visibleKits = sectionKits.filter((kit) => {
-    const matchesAccess =
-      activeAccess === "all" || activeAccess === "kits" ? true : kit.access === activeAccess;
-    const matchesStyle = activeStyle === "All" ? true : kit.styles.includes(activeStyle);
-    const haystack = [kit.name, kit.description, kit.tagline, kit.styles.join(" ")]
-      .join(" ")
-      .toLowerCase();
-    const matchesSearch = haystack.includes(normalizedSearch);
-
-    return matchesAccess && matchesStyle && matchesSearch;
-  });
-
-  const resultsCount = activeAccess === "kits" ? visibleKits.length : filteredSections.length;
-
-  const runAIMix = async (promptOverride?: string) => {
-    const prompt = (promptOverride ?? ideaPrompt).trim();
-
-    if (!prompt || isGenerating) {
-      return;
-    }
-
-    try {
-      setIsGenerating(true);
-      setGeneratorMessage("Generating a fresh section mix for your page...");
-
-      const draft = await requestDraftFromPrompt(prompt, brandKit);
-      setProjectName(draft.projectName);
-      updateBrandKit(draft.brandKit);
-      updateTheme(draft.themePatch);
-      replaceCanvasSections(draft.sections);
-      setIdeaPrompt(prompt);
-      setGeneratorMessage(draft.summary);
-    } catch (error) {
-      console.error(error);
-      setGeneratorMessage(
-        "The local AI mix could not finish just now. Try a shorter prompt or run it again.",
-      );
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const loadKit = (kitId: string) => {
-    const kit = sectionKits.find((candidate) => candidate.id === kitId);
-
-    if (!kit || kit.access === "premium") {
-      return;
-    }
-
+  const applyTemplate = (kit: SectionKit) => {
     replaceCanvasSections(createCanvasSectionsFromBlueprintIds(kit.sectionIds, brandKit));
     updateTheme(kit.themePatch);
-    setProjectName(kit.name);
-    setGeneratorMessage(`Loaded ${kit.name}. You can now tune the copy, theme, and brand kit.`);
+    onMobileClose?.();
   };
 
   return (
-    <aside className="flex w-full flex-col border-b border-slate-200 bg-[#f8f6f1] xl:h-[calc(100dvh-4.5rem)] xl:w-[430px] xl:min-w-[430px] xl:border-r xl:border-b-0">
-      <div className="border-b border-slate-200 px-5 py-5">
-        <div className="mb-4 flex items-start justify-between gap-4">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-              Section Marketplace
-            </div>
-            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-              Mix blocks with confidence
-            </h2>
-          </div>
-          <div className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 shadow-sm">
-            {resultsCount} results
-          </div>
-        </div>
-
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search sections, kits, styles, or use cases"
-            className="w-full rounded-full border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-700 shadow-sm outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-slate-200"
-          />
-        </div>
-
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-          <button
-            type="button"
-            onClick={() => setActiveCategory("All")}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] transition",
-              activeCategory === "All"
-                ? "bg-slate-900 text-white"
-                : "bg-white text-slate-500 shadow-sm hover:bg-slate-100",
-            )}
-          >
-            All
-          </button>
-          {sectionCategoryOrder.map((category) => (
-            <button
-              key={category}
-              type="button"
-              onClick={() => setActiveCategory(category)}
-              className={cn(
-                "rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] transition",
-                activeCategory === category
-                  ? "bg-slate-900 text-white"
-                  : "bg-white text-slate-500 shadow-sm hover:bg-slate-100",
-              )}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          <button
-            type="button"
-            onClick={() => setActiveStyle("All")}
-            className={cn(
-              "rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition",
-              activeStyle === "All"
-                ? "bg-slate-200 text-slate-900"
-                : "bg-white text-slate-500 shadow-sm hover:bg-slate-100",
-            )}
-          >
-            All styles
-          </button>
-          {sectionStyleOrder.map((style) => (
-            <button
-              key={style}
-              type="button"
-              onClick={() => setActiveStyle(style)}
-              className={cn(
-                "rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition",
-                activeStyle === style
-                  ? "bg-slate-200 text-slate-900"
-                  : "bg-white text-slate-500 shadow-sm hover:bg-slate-100",
-              )}
-            >
-              {formatStyleLabel(style)}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          {(
-            [
-              { id: "all", label: "All" },
-              { id: "free", label: "Free" },
-              { id: "premium", label: "Premium" },
-              { id: "kits", label: "Kits" },
-            ] as const
-          ).map((filter) => (
-            <button
-              key={filter.id}
-              type="button"
-              onClick={() => setActiveAccess(filter.id)}
-              className={cn(
-                "rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] transition",
-                activeAccess === filter.id
-                  ? "bg-slate-900 text-white"
-                  : "bg-white text-slate-500 shadow-sm hover:bg-slate-100",
-              )}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-4 overflow-hidden rounded-[28px] border border-slate-900/10 bg-slate-950 text-white shadow-[0_20px_40px_rgba(15,23,42,0.16)]">
-          <div className="border-b border-white/10 px-4 py-3">
-            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/60">
-              <Sparkles className="h-3.5 w-3.5" />
-              AI Mix Engine
-            </div>
-            <p className="mt-2 text-sm leading-6 text-white/70">{generatorMessage}</p>
+    <>
+      <aside className="hidden h-[calc(100dvh-60px)] w-[600px] min-w-[600px] flex-col overflow-hidden border-r border-white/[0.06] bg-[#111111] lg:flex">
+        <div className="flex h-full w-full">
+          <div className="w-1/2 min-w-0 overflow-hidden border-r border-white/10">
+            <TemplatesPanel onUseTemplate={applyTemplate} />
           </div>
 
-          <div className="space-y-3 px-4 py-4">
-            <textarea
-              value={ideaPrompt}
-              onChange={(event) => setIdeaPrompt(event.target.value)}
-              rows={3}
-              className="w-full resize-none rounded-[22px] border border-white/10 bg-white/[0.08] px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/[0.35] focus:border-white/30 focus:bg-white/[0.12]"
-              placeholder="Build a premium website for a real estate agency with trust, comparison pricing, and a minimal footer..."
+          <div className="w-1/2 min-w-0 overflow-hidden">
+            <SectionsPanel
+              filteredSections={filteredSections}
+              search={search}
+              setSearch={setSearch}
+              activeCategory={activeCategory}
+              setActiveCategory={setActiveCategory}
+              activeStyle={activeStyle}
+              setActiveStyle={setActiveStyle}
+              onPreview={(blueprint) => setPreviewBlueprint(blueprint)}
             />
+          </div>
+        </div>
+      </aside>
 
-            <div className="flex flex-wrap gap-2">
-              {aiPresets.map((preset) => (
+      <div
+        className={cn(
+          "fixed inset-0 z-[65] lg:hidden",
+          mobileOpen ? "pointer-events-auto" : "pointer-events-none",
+        )}
+        aria-hidden={!mobileOpen}
+      >
+        <button
+          type="button"
+          onClick={onMobileClose}
+          className={cn(
+            "absolute inset-0 bg-black/60 transition",
+            mobileOpen ? "opacity-100" : "opacity-0",
+          )}
+          aria-label="Close section library"
+        />
+        <div
+          className={cn(
+            "absolute inset-x-0 bottom-0 h-[78dvh] overflow-hidden rounded-t-[28px] border-t border-white/10 bg-[#111111] shadow-[0_-24px_80px_rgba(0,0,0,0.45)] transition-transform",
+            mobileOpen ? "translate-y-0" : "translate-y-full",
+          )}
+        >
+          <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-4">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-[0.22em] text-zinc-600">
+                  Section library
+                </div>
+                <div className="mt-1 text-sm text-zinc-400">Browse templates or sections</div>
+              </div>
+              <button
+                type="button"
+                onClick={onMobileClose}
+                className="rounded-lg p-2 text-zinc-500 hover:bg-white/5 hover:text-white"
+                aria-label="Close library drawer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex border-b border-white/10">
+              {mobileTabs.map((tab) => (
                 <button
-                  key={preset}
+                  key={tab.id}
                   type="button"
-                  onClick={() => {
-                    setIdeaPrompt(preset);
-                    void runAIMix(preset);
-                  }}
-                  className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80 transition hover:bg-white/[0.16]"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    "flex-1 py-3 text-sm font-semibold transition-colors",
+                    activeTab === tab.id
+                      ? "border-b-2 border-white text-white"
+                      : "text-white/50",
+                  )}
                 >
-                  {preset.includes("fitness")
-                    ? "Fitness"
-                    : preset.includes("editorial")
-                      ? "Editorial"
-                      : "Playful SaaS"}
+                  {tab.label}
                 </button>
               ))}
             </div>
 
-            <button
-              type="button"
-              onClick={() => void runAIMix()}
-              disabled={isGenerating || ideaPrompt.trim().length === 0}
-              className={cn(
-                "w-full rounded-full px-4 py-3 text-sm font-semibold transition",
-                isGenerating || ideaPrompt.trim().length === 0
-                  ? "cursor-not-allowed bg-white/10 text-white/40"
-                  : "bg-white text-slate-950 hover:bg-slate-100",
-              )}
-            >
-              {isGenerating ? (
-                <>
-                  <LoaderCircle className="mr-2 inline h-4 w-4 animate-spin" />
-                  Generating fresh draft...
-                </>
+            <div className="min-h-0 flex-1 overflow-hidden">
+              {activeTab === "templates" ? (
+                <TemplatesPanel onUseTemplate={applyTemplate} showHeader={false} />
               ) : (
-                <>
-                  <WandSparkles className="mr-2 inline h-4 w-4" />
-                  Generate free-section mix
-                </>
+                <SectionsPanel
+                  filteredSections={filteredSections}
+                  search={search}
+                  setSearch={setSearch}
+                  activeCategory={activeCategory}
+                  setActiveCategory={setActiveCategory}
+                  activeStyle={activeStyle}
+                  setActiveStyle={setActiveStyle}
+                  onPreview={(blueprint) => setPreviewBlueprint(blueprint)}
+                  showHeader={false}
+                  compactCards
+                />
               )}
-            </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-6 px-5 py-5 xl:flex-1 xl:overflow-y-auto">
-        {visibleKits.length > 0 && (
-          <section>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                Section Kits
-              </h3>
-              <span className="text-xs text-slate-400">{visibleKits.length}</span>
-            </div>
-            <div className="grid gap-4">
-              {visibleKits.map((kit) => (
-                <div
-                  key={kit.id}
-                  className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm"
-                >
-                  <div className="border-b border-slate-200 bg-[linear-gradient(135deg,#111827,#0f172a)] px-4 py-4 text-white">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/55">
-                          {kit.priceLabel}
-                        </div>
-                        <div className="mt-2 text-lg font-semibold">{kit.name}</div>
-                        <div className="mt-2 text-sm leading-6 text-white/70">
-                          {kit.tagline}
-                        </div>
-                      </div>
-                      <div
-                        className={cn(
-                          "inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]",
-                          kit.access === "premium"
-                            ? "bg-white/10 text-white"
-                            : "bg-emerald-400/20 text-emerald-200",
-                        )}
-                      >
-                        {kit.access === "premium" ? <Lock className="h-3.5 w-3.5" /> : null}
-                        {kit.access}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 px-4 py-4">
-                    <div className="flex flex-wrap gap-2">
-                      {kit.styles.map((style) => (
-                        <span
-                          key={style}
-                          className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500"
-                        >
-                          {formatStyleLabel(style)}
-                        </span>
-                      ))}
-                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                        {kit.sectionIds.length} sections
-                      </span>
-                    </div>
-
-                    <div className="text-sm leading-6 text-slate-500">{kit.description}</div>
-
-                    <div className="grid grid-cols-2 gap-2 text-xs text-slate-500">
-                      {kit.sectionIds.map((sectionId) => {
-                        const section = availableSections.find((item) => item.id === sectionId);
-                        if (!section) {
-                          return null;
-                        }
-
-                        return (
-                          <div
-                            key={sectionId}
-                            className="rounded-[18px] border border-slate-200 bg-slate-50 px-3 py-2"
-                          >
-                            {section.name}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => loadKit(kit.id)}
-                      disabled={kit.access === "premium"}
-                      className={cn(
-                        "w-full rounded-full px-4 py-3 text-sm font-semibold transition",
-                        kit.access === "premium"
-                          ? "cursor-not-allowed bg-slate-100 text-slate-400"
-                          : "bg-slate-900 text-white hover:bg-slate-800",
-                      )}
-                    >
-                      {kit.access === "premium" ? "Locked premium kit" : "Load kit to canvas"}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {activeAccess !== "kits" &&
-          sectionCategoryOrder.map((category) => {
-            if (activeCategory !== "All" && category !== activeCategory) {
-              return null;
-            }
-
-            const group =
-              activeCategory === "All"
-                ? filteredSections.filter((section) => section.type === category)
-                : filteredSections;
-
-            if (group.length === 0) {
-              return null;
-            }
-
-            return (
-              <section key={category}>
-                {activeCategory === "All" && (
-                  <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                      {category}
-                    </h3>
-                    <span className="text-xs text-slate-400">{group.length}</span>
-                  </div>
-                )}
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-                  {group.map((blueprint) => (
-                    <SidebarItem key={blueprint.id} blueprint={blueprint} />
-                  ))}
-                </div>
-              </section>
-            );
-          })}
-
-        {filteredSections.length === 0 && visibleKits.length === 0 && (
-          <div className="rounded-[28px] border border-dashed border-slate-300 bg-white/70 p-8 text-center text-sm text-slate-500">
-            No marketplace items matched your filters. Try a broader term or switch access types.
-          </div>
-        )}
-
-        {activeAccess === "premium" && (
-          <div className="rounded-[24px] border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-700">
-            Premium sections are browseable in this MVP marketplace, but they stay locked on the
-            canvas until billing is wired up.
-          </div>
-        )}
-
-        {activeAccess === "kits" && visibleKits.length > 0 && (
-          <div className="rounded-[24px] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-500 shadow-sm">
-            <div className="flex items-center gap-2 font-semibold text-slate-900">
-              <Layers3 className="h-4 w-4" />
-              Kit bundles
-            </div>
-            <div className="mt-2 leading-6">
-              Kits group matching sections into ready-made directions. Free kits load directly,
-              while premium kits stay visible as locked marketplace inventory.
-            </div>
-          </div>
-        )}
-      </div>
-    </aside>
+      <PreviewModal blueprint={previewBlueprint} onClose={() => setPreviewBlueprint(null)} />
+    </>
   );
 }

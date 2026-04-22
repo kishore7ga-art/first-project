@@ -1,14 +1,7 @@
-import { Navbar } from "@/components/layout/navbar";
-
 export default function BuilderLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div className="flex min-h-full flex-col">
-      <Navbar />
-      <main className="flex-1">{children}</main>
-    </div>
-  );
+  return <main className="h-dvh overflow-hidden bg-[#0A0A0A]">{children}</main>;
 }

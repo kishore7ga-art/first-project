@@ -1,20 +1,28 @@
 "use client";
 
-import React from "react";
+import { Expand, Lock, Plus } from "lucide-react";
 import { useDraggable } from "@dnd-kit/core";
-import * as Icons from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { Lock, MoonStar, Star } from "lucide-react";
 import type { SectionBlueprint } from "@/builder/types";
-import { cn, formatCompactNumber, formatRating } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useBuilderStore } from "@/store/useBuilderStore";
 import { SectionReferencePreview } from "./SectionReferencePreview";
 
 interface SidebarItemProps {
   blueprint: SectionBlueprint;
+  onPreview: () => void;
+  compact?: boolean;
 }
 
-export function SidebarItem({ blueprint }: SidebarItemProps) {
+function colorFromBlueprint(blueprint: SectionBlueprint) {
+  const palette = ["#3B82F6", "#10B981", "#F97316", "#A855F7", "#06B6D4", "#F59E0B"];
+  const value = blueprint.id.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return palette[value % palette.length];
+}
+
+export function SidebarItem({ blueprint, onPreview, compact = false }: SidebarItemProps) {
+  const addSection = useBuilderStore((state) => state.addSection);
   const isLocked = blueprint.marketplace.access === "premium";
+  const color = colorFromBlueprint(blueprint);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `library-${blueprint.id}`,
     disabled: isLocked,
@@ -30,117 +38,141 @@ export function SidebarItem({ blueprint }: SidebarItemProps) {
       }
     : undefined;
 
-  const iconMap = Icons as unknown as Record<string, LucideIcon>;
-  const IconRender = iconMap[blueprint.thumbnail] ?? Icons.LayoutTemplate;
   const dragProps = isLocked ? {} : { ...listeners, ...attributes };
 
   return (
-    <button
+    <div
       ref={setNodeRef}
       style={style}
-      type="button"
-      aria-disabled={isLocked}
       {...dragProps}
       className={cn(
-        "group w-full rounded-[26px] border border-slate-200 bg-white p-3 text-left shadow-sm transition-all",
-        isLocked
-          ? "cursor-not-allowed"
-          : "hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg active:cursor-grabbing",
-        isDragging && "opacity-60 shadow-2xl",
+        "section-card group relative w-full overflow-hidden rounded-lg border border-[#2A2A2A] bg-[#1A1A1A]",
+        compact ? "h-[180px]" : "h-[180px] 2xl:h-[196px]",
+        isLocked ? "cursor-not-allowed" : "cursor-grab hover:border-white/20",
+        isDragging && "opacity-50",
       )}
+      onClick={
+        compact
+          ? () => {
+              if (!isLocked) {
+                onPreview();
+              }
+            }
+          : undefined
+      }
     >
-      <div className="relative overflow-hidden rounded-[20px]">
-        <div className="aspect-[5/3] transition duration-300 group-hover:scale-[1.01]">
-          <SectionReferencePreview blueprint={blueprint} />
-        </div>
-
-        <div className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 shadow-sm backdrop-blur">
-          {blueprint.preview.eyebrow}
-        </div>
-
-        <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-2">
-          {blueprint.marketplace.darkMode ? (
-            <span className="rounded-full bg-slate-950/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
-              <MoonStar className="mr-1 inline h-3 w-3" />
-              Dark ready
-            </span>
-          ) : null}
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
-            <IconRender className="h-4 w-4" />
-          </div>
-        </div>
-
-        <div className="pointer-events-none absolute bottom-3 left-3 flex items-center gap-2">
-          <div className="rounded-full bg-slate-950/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
-            Reference preview
-          </div>
-          {isLocked ? (
-            <div className="rounded-full bg-amber-400/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-950 backdrop-blur">
-              <Lock className="mr-1 inline h-3 w-3" />
-              Premium
-            </div>
-          ) : (
-            <div className="rounded-full bg-emerald-400/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-950 backdrop-blur">
-              Free
-            </div>
-          )}
-        </div>
-
-        {isLocked ? (
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(15,23,42,0.26))]" />
-        ) : null}
+      <div
+        className={cn(
+          "absolute left-0 top-0 origin-top-left pointer-events-none",
+          compact
+            ? "h-[820px] w-[1280px] scale-[0.18]"
+            : "h-[820px] w-[1280px] scale-[0.215] 2xl:scale-[0.225]",
+        )}
+      >
+        <SectionReferencePreview blueprint={blueprint} />
       </div>
 
-      <div className="px-1 pt-3">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-              {blueprint.preview.title}
+      {compact ? (
+        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/90 to-transparent p-2 pt-10">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="truncate text-[11px] font-bold text-white">{blueprint.name}</div>
+              <div className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                {blueprint.type}
+              </div>
             </div>
-            <div className="text-sm font-semibold text-slate-900">{blueprint.name}</div>
-            <div className="mt-1 text-xs leading-5 text-slate-500">
-              {blueprint.preview.detail}
-            </div>
-          </div>
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-            {blueprint.type}
-          </span>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {blueprint.marketplace.styles.map((styleTag) => (
             <span
-              key={styleTag}
-              className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500"
-            >
-              {styleTag}
-            </span>
-          ))}
-          {blueprint.marketplace.kitIds.length > 0 ? (
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
-              {blueprint.marketplace.kitIds.length} kit
-              {blueprint.marketplace.kitIds.length > 1 ? "s" : ""}
-            </span>
-          ) : null}
-        </div>
-
-        <div className="mt-3 flex items-center justify-between rounded-[18px] border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-            <span className="font-semibold text-slate-700">
-              {formatRating(blueprint.marketplace.rating)}
-            </span>
-            <span>({blueprint.marketplace.reviews})</span>
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: color }}
+            />
           </div>
-          <div>{formatCompactNumber(blueprint.marketplace.usageCount)} uses</div>
-        </div>
 
-        <div className="mt-3 text-xs leading-5 text-slate-400">
-          {isLocked
-            ? "Premium section preview only for now."
-            : "Drag into the canvas to add this section."}
+          <div
+            className="mt-2 grid grid-cols-2 gap-1.5"
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => addSection(blueprint)}
+              disabled={isLocked}
+              className="rounded-md bg-white px-2 py-1.5 text-[10px] font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isLocked ? (
+                <>
+                  <Lock className="mr-1 inline h-3 w-3" />
+                  Locked
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-1 inline h-3 w-3" />
+                  Add
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onPreview}
+              className="rounded-md border border-white/40 px-2 py-1.5 text-[10px] font-bold text-white transition hover:bg-white/10"
+            >
+              <Expand className="mr-1 inline h-3 w-3" />
+              Preview
+            </button>
+          </div>
         </div>
-      </div>
-    </button>
+      ) : (
+        <>
+          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/80 to-transparent p-3 pt-10">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <div className="truncate text-[11px] font-bold text-white">{blueprint.name}</div>
+                <div className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                  {blueprint.type}
+                </div>
+              </div>
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+            </div>
+          </div>
+
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/75 opacity-0 transition group-hover:opacity-100">
+            <div
+              className="grid gap-2"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={() => addSection(blueprint)}
+                disabled={isLocked}
+                className="rounded-md bg-white px-4 py-1.5 text-xs font-bold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLocked ? (
+                  <>
+                    <Lock className="mr-1 inline h-3.5 w-3.5" />
+                    Locked
+                  </>
+                ) : (
+                  <>
+                    <Plus className="mr-1 inline h-3.5 w-3.5" />
+                    Add to Canvas
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={onPreview}
+                className="rounded-md border border-white/40 px-4 py-1.5 text-xs font-bold text-white transition hover:bg-white/10"
+              >
+                <Expand className="mr-1 inline h-3.5 w-3.5" />
+                Preview
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

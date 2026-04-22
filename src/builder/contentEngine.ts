@@ -271,7 +271,10 @@ function createPricingCards(brandKit: BrandKit) {
   ];
 }
 
-export function personalizeSectionData(blueprintId: string, partialBrandKit: Partial<BrandKit>) {
+export function personalizeSectionData(
+  blueprintId: string,
+  partialBrandKit: Partial<BrandKit>,
+): Record<string, unknown> {
   const brandKit = normalizeBrandKit(partialBrandKit);
   const tone = toneProfiles[brandKit.brandTone];
   const topic = topicNiche(brandKit);
@@ -308,6 +311,8 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
         subtitle: `${brandKit.companyName} exists to ${brandKit.uniqueValue}. The result is a ${tone.mood} website experience that feels ready from the first draft.`,
         primaryCta: brandKit.ctaLabel,
         secondaryCta: "See example page",
+        mediaQuery: `${topic} launch preview`,
+        mediaAlt: `${brandKit.companyName} launch page preview`,
       };
     case "hero-2":
       return {
@@ -323,6 +328,8 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
           "Instant theme and copy alignment",
           "Cleaner launches with less review churn",
         ],
+        mediaQuery: `${topic} dashboard preview`,
+        mediaAlt: `${brandKit.companyName} dashboard preview`,
       };
     case "hero-3":
       return {
@@ -332,6 +339,8 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
         primaryCta: brandKit.ctaLabel,
         secondaryCta: "Browse sections",
         quote: `"${brandKit.companyName} gave us a ${tone.proof} way to explain our ${topic} offer and launch with less friction."`,
+        mediaQuery: `${topic} editorial preview`,
+        mediaAlt: `${brandKit.companyName} editorial preview`,
       };
     case "hero-4":
       return {
@@ -346,7 +355,7 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
       return {
         eyebrow: `${titleCase(topic)} with less noise`,
         title: `A ${tone.adjective} way to present ${brandKit.companyName}.`,
-        subtitle: `${brandKit.companyName} helps ${audience} shape a homepage that feels focused, intentional, and easy to trust.`,
+        subtitle: `${brandKit.companyName} helps ${audience} shape a homepage that feels clear, calm, and easy to trust.`,
         primaryCta: brandKit.ctaLabel,
       };
     case "features-1":
@@ -495,8 +504,18 @@ export function personalizeSectionData(blueprintId: string, partialBrandKit: Par
         ],
         copyright: `(c) 2026 ${brandKit.companyName}. Built with care.`,
       };
-    default:
-      return deepClone(sectionBlueprintMap[blueprintId]?.defaultData ?? {});
+    default: {
+      const blueprint = sectionBlueprintMap[blueprintId];
+
+      if (blueprint?.variantOf) {
+        return {
+          ...deepClone(blueprint.defaultData),
+          ...deepClone(personalizeSectionData(blueprint.variantOf, brandKit)),
+        };
+      }
+
+      return deepClone(blueprint?.defaultData ?? {});
+    }
   }
 }
 

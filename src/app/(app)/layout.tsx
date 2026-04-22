@@ -6,9 +6,9 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-full flex-col bg-[#09090B] text-white">
       <Navbar />
-      <main className="flex-1 bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef3ff_100%)]">
+      <main className="flex-1 bg-[#09090B]">
         {children}
       </main>
     </div>
