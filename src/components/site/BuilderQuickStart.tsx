@@ -30,7 +30,7 @@ export function BuilderQuickStart() {
 
   return (
     <div className="rounded-[36px] border border-slate-200 bg-[linear-gradient(135deg,_#0f172a_0%,_#1d4ed8_100%)] p-6 text-white shadow-[0_24px_80px_rgba(15,23,42,0.16)] sm:p-8">
-      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/75">
             <Sparkles className="h-3.5 w-3.5" />

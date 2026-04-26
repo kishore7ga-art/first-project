@@ -53,7 +53,7 @@ export function ResponsiveButton(props: ResponsiveButtonProps) {
   } = props;
 
   const baseClasses = cn(
-    "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200",
+    "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-all duration-200",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "active:scale-[0.98]",
     sizeClasses[size],

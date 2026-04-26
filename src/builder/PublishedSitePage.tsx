@@ -52,7 +52,7 @@ export function PublishedSitePage({ slug }: PublishedSitePageProps) {
   return (
     <div className="builder-theme min-h-dvh overflow-x-hidden" style={getBuilderThemeStyles(project.theme)}>
       <div className="sticky top-0 z-30 border-b border-[var(--builder-border)] bg-[var(--builder-card)]/90 px-4 py-3 backdrop-blur">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <div className="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-3 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--builder-muted)]">
               Local published preview
@@ -79,7 +79,7 @@ export function PublishedSitePage({ slug }: PublishedSitePageProps) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <div className="mx-auto w-full max-w-7xl min-w-0 px-4 py-8 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-[32px] border border-[var(--builder-border)] bg-[var(--builder-card)] shadow-[var(--builder-shadow)]">
           {project.sections.map((section) => {
             const Component = Registry[section.blueprintId];

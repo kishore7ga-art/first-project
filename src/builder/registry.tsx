@@ -45,7 +45,7 @@ function Section({
   return (
     <section
       className={cn(
-        "builder-section overflow-x-hidden border-b border-[var(--builder-border)] bg-[var(--builder-card)]",
+        "builder-section w-full overflow-x-hidden border-b border-[var(--builder-border)] bg-[var(--builder-card)]",
         className,
       )}
     >
@@ -64,7 +64,7 @@ function Container({
   return (
     <div
       className={cn(
-        "mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16",
+        "mx-auto w-full max-w-7xl min-w-0 px-4 sm:px-6 lg:px-8",
         className,
       )}
     >
@@ -87,7 +87,7 @@ function Eyebrow({
   return (
     <div
       className={cn(
-        "builder-pill inline-flex items-center gap-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]",
+        "builder-pill inline-flex max-w-full items-center gap-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em]",
         className,
       )}
     >
@@ -113,7 +113,7 @@ function BrandLogo({
   fallback?: ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex min-w-0 shrink-0 items-center gap-3">
       {logoUrl ? (
         <Image
           src={logoUrl}
@@ -197,7 +197,7 @@ function HeroMediaFrame({
             <div className="h-3 w-24 rounded-full bg-[var(--builder-primary)]" />
             <div className="h-8 w-20 rounded-full bg-[var(--builder-soft-strong)]" />
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-[1.1fr_0.9fr]">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div className="rounded-[18px] border border-[var(--builder-border)] bg-[var(--builder-card)] p-3">
               <div className="h-2 w-16 rounded-full bg-[var(--builder-primary)]" />
               <div className="mt-3 space-y-2">
@@ -252,7 +252,7 @@ function PrimaryButton({
     return (
       <Element
         {...(resolvedHref ? { href: resolvedHref } : {})}
-        className="builder-primary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
+        className="builder-primary-button inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
       >
         <span>{value}</span>
         {icon && <ArrowRight className="h-4 w-4" />}
@@ -264,7 +264,7 @@ function PrimaryButton({
     <button
       type="button"
       onClick={(event) => event.preventDefault()}
-      className="builder-primary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
+      className="builder-primary-button inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
     >
       <EditableText value={value} onChange={onChange} readOnly={readOnly} />
       {icon && <ArrowRight className="h-4 w-4" />}
@@ -293,7 +293,7 @@ function SecondaryButton({
     return (
       <Element
         {...(resolvedHref ? { href: resolvedHref } : {})}
-        className="builder-secondary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
+        className="builder-secondary-button inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
       >
         <span>{value}</span>
       </Element>
@@ -304,7 +304,7 @@ function SecondaryButton({
     <button
       type="button"
       onClick={(event) => event.preventDefault()}
-      className="builder-secondary-button inline-flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
+      className="builder-secondary-button inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap px-4 py-3 text-sm font-semibold sm:w-auto sm:px-5 sm:py-3.5"
     >
       <EditableText value={value} onChange={onChange} readOnly={readOnly} />
     </button>
@@ -414,8 +414,8 @@ function Hero1({ data, updateData, readOnly = false, anchors = [] }: SectionProp
 
   return (
     <Section>
-      <Container className="grid items-center gap-12 py-[var(--builder-section-space)] text-center lg:grid-cols-[1.05fr_0.95fr] lg:text-left">
-        <div>
+      <Container className="grid grid-cols-1 items-center gap-12 py-[var(--builder-section-space)] text-center lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:text-left">
+        <div className="min-w-0">
           <Eyebrow
             value={content.eyebrow}
             onChange={(value) => updateData({ eyebrow: value })}
@@ -483,8 +483,8 @@ function Hero2({ data, updateData, readOnly = false, anchors = [] }: SectionProp
 
   return (
     <Section>
-      <Container className="grid items-center gap-10 py-[var(--builder-section-space)] lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
+      <Container className="grid grid-cols-1 items-center gap-10 py-[var(--builder-section-space)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="min-w-0">
           <Eyebrow
             value={content.eyebrow}
             onChange={(value) => updateData({ eyebrow: value })}
@@ -590,8 +590,8 @@ function Hero3({ data, updateData, readOnly = false, anchors = [] }: SectionProp
 
   return (
     <Section className="bg-[linear-gradient(135deg,var(--builder-soft),var(--builder-card))]">
-      <Container className="grid gap-10 py-[var(--builder-section-space)] lg:grid-cols-[1fr_0.72fr]">
-        <div>
+      <Container className="grid grid-cols-1 gap-10 py-[var(--builder-section-space)] lg:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)]">
+        <div className="min-w-0">
           <Eyebrow
             value={content.eyebrow}
             onChange={(value) => updateData({ eyebrow: value })}
@@ -787,7 +787,7 @@ function Navbar1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="py-4">
       <Container>
-        <div className="flex flex-col gap-4 rounded-[24px] border border-[var(--builder-border)] bg-[var(--builder-card)] px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col flex-wrap items-center justify-between gap-4 rounded-[24px] border border-[var(--builder-border)] bg-[var(--builder-card)] px-4 py-3 text-center sm:flex-row sm:text-left lg:px-5 lg:py-4">
           <BrandLogo
             value={content.logo}
             logoUrl={content.logoUrl}
@@ -795,7 +795,7 @@ function Navbar1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
             readOnly={readOnly}
             className="builder-heading text-lg font-semibold text-[var(--builder-foreground)] sm:text-xl md:text-2xl"
           />
-          <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
             {content.links.map((link, index) => (
               <TextLink
                 key={`${link}-${index}`}
@@ -806,7 +806,7 @@ function Navbar1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
                 }
                 anchors={anchors}
                 readOnly={readOnly}
-                className="transition hover:text-[var(--builder-foreground)]"
+                className="whitespace-nowrap transition hover:text-[var(--builder-foreground)]"
               />
             ))}
           </div>
@@ -842,7 +842,7 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
               readOnly={readOnly}
             />
           </div>
-          <div className="flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col flex-wrap items-center justify-between gap-4 px-4 py-3 text-center sm:flex-row sm:text-left lg:px-5 lg:py-4">
             <BrandLogo
               value={content.logo}
               logoUrl={content.logoUrl}
@@ -850,7 +850,7 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
               readOnly={readOnly}
               className="builder-heading text-lg font-semibold text-[var(--builder-foreground)] sm:text-xl md:text-2xl"
             />
-            <div className="flex flex-wrap items-center justify-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
               {content.links.map((link, index) => (
                 <TextLink
                   key={`${link}-${index}`}
@@ -861,7 +861,7 @@ function Navbar2({ data, updateData, readOnly = false, anchors = [] }: SectionPr
                   }
                   anchors={anchors}
                   readOnly={readOnly}
-                  className="transition hover:text-[var(--builder-foreground)]"
+                  className="whitespace-nowrap transition hover:text-[var(--builder-foreground)]"
                 />
               ))}
             </div>
@@ -890,7 +890,7 @@ function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="py-5">
       <Container>
-        <div className="builder-soft-card flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="builder-soft-card flex flex-col flex-wrap items-center justify-between gap-4 px-4 py-3 text-center sm:flex-row sm:text-left lg:px-5 lg:py-4">
           <BrandLogo
             value={content.logo}
             logoUrl={content.logoUrl}
@@ -903,7 +903,7 @@ function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
             }
             className="builder-heading text-lg font-semibold text-[var(--builder-foreground)] sm:text-xl md:text-2xl"
           />
-          <div className="flex flex-wrap items-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-5 text-sm font-medium text-[var(--builder-muted)]">
             {content.links.map((link, index) => (
               <TextLink
                 key={`${link}-${index}`}
@@ -914,7 +914,7 @@ function Navbar3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
                 }
                 anchors={anchors}
                 readOnly={readOnly}
-                className="transition hover:text-[var(--builder-foreground)]"
+                className="whitespace-nowrap transition hover:text-[var(--builder-foreground)]"
               />
             ))}
           </div>
@@ -1011,8 +1011,8 @@ function Features2({ data, updateData, readOnly = false }: SectionProps) {
 
   return (
     <Section>
-      <Container className="grid gap-10 py-[var(--builder-section-space)] lg:grid-cols-[0.9fr_1.1fr]">
-        <div>
+      <Container className="grid grid-cols-1 gap-10 py-[var(--builder-section-space)] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="min-w-0">
           <Heading
             value={content.heading}
             onChange={(value) => updateData({ heading: value })}
@@ -1578,8 +1578,8 @@ function Cta2({ data, updateData, readOnly = false, anchors = [] }: SectionProps
 
   return (
     <Section className="bg-[var(--builder-foreground)] text-white">
-      <Container className="grid gap-8 py-[var(--builder-section-space)] lg:grid-cols-[1.1fr_0.9fr]">
-        <div>
+      <Container className="grid grid-cols-1 gap-8 py-[var(--builder-section-space)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div className="min-w-0">
           <div className="inline-flex rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
             <EditableText
               value={content.badge}
@@ -1615,7 +1615,7 @@ function Cta2({ data, updateData, readOnly = false, anchors = [] }: SectionProps
             {readOnly ? (
               <a
                 href={resolveSectionHref(content.primaryCta, anchors)}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950"
+                className="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 sm:w-auto"
               >
                 <span>{content.primaryCta}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -1624,7 +1624,7 @@ function Cta2({ data, updateData, readOnly = false, anchors = [] }: SectionProps
               <button
                 type="button"
                 onClick={(event) => event.preventDefault()}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950"
+                className="inline-flex w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 sm:w-auto"
               >
                 <EditableText
                   value={content.primaryCta}
@@ -1653,7 +1653,7 @@ function Footer1({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="bg-[var(--builder-soft)]">
       <Container className="py-[calc(var(--builder-section-space)_-_1rem)]">
-        <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.2fr_repeat(3,0.8fr)]">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <BrandLogo
               value={content.logo}
@@ -1786,7 +1786,7 @@ function Footer3({ data, updateData, readOnly = false, anchors = [] }: SectionPr
   return (
     <Section className="bg-[var(--builder-soft)]">
       <Container className="py-[calc(var(--builder-section-space)_-_1rem)]">
-        <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <div className="max-w-md">
             <BrandLogo
               value={content.logo}

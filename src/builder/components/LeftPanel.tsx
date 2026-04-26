@@ -73,7 +73,7 @@ function TemplateCard({
   return (
     <article className="template-card group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900 hover:border-white/20">
       <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
-        <div className="pointer-events-none absolute left-0 top-0 h-[820px] w-[1280px] origin-top-left scale-[0.19] 2xl:scale-[0.205]">
+        <div className="pointer-events-none h-full w-full">
           <SectionReferencePreview blueprint={previewBlueprint} />
         </div>
 
@@ -386,7 +386,7 @@ export function LeftPanel({ mobileOpen = false, onMobileClose }: LeftPanelProps)
 
   return (
     <>
-      <aside className="hidden h-[calc(100dvh-60px)] w-[600px] min-w-[600px] flex-col overflow-hidden border-r border-white/[0.06] bg-[#111111] lg:flex">
+      <aside className="hidden h-[calc(100dvh-60px)] w-full min-w-0 flex-col overflow-hidden border-r border-white/[0.06] bg-[#111111] lg:flex">
         <div className="flex h-full w-full">
           <div className="w-1/2 min-w-0 overflow-hidden border-r border-white/10">
             <TemplatesPanel onUseTemplate={applyTemplate} />

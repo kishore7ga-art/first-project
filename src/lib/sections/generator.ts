@@ -135,10 +135,10 @@ Animation to implement: ${animation}
 Heading font: ${font.h} weight ${font.w} size ${font.sz}
 Body font: ${font.b}
 
-TEN MANDATORY RULES:
-1. Tailwind classes for layout. style={{}} for exact hex colors.
+MANDATORY RULES:
+1. Tailwind responsive classes for layout. style={{}} is allowed only for exact hex colors and non-layout animation values.
 2. Include <style> JSX tag with all @keyframes for the animation.
-3. Heroes: style={{minHeight:'100vh'}}. Others: minHeight:'70vh'.
+3. Use Tailwind min-h-screen for heroes and min-h-[70vh] for other sections. Do not use inline width, height, minWidth, maxWidth, or fixed pixel sizing.
 4. Must look like a real premium funded startup website.
 5. Real content about a SaaS tech product. Zero lorem ipsum.
 6. Heading minimum ${font.sz} at desktop breakpoint.
@@ -149,6 +149,7 @@ TEN MANDATORY RULES:
 11. Use ResponsiveContainer, ResponsiveGrid, ResponsiveFlex, ResponsiveButton, and ResponsiveImage whenever they simplify the layout.
 12. Keep layouts mobile-first. Stack on phones, collapse grids, and avoid fixed-width desktop-only assumptions.
 13. Typography and buttons should scale automatically across breakpoints, with full-width mobile CTAs by default.
+14. Never use single-character word wrapping, browser magnification, transform scale for previews, or fixed pixel width utility classes.
 
 Start response with exactly: export default function Section() {
 Nothing before that line. No markdown. No imports. Just JSX.`;

@@ -8,7 +8,7 @@ const HEADING_CLASSES = {
 const RESPONSIVE_HELPERS = [
   'function ResponsiveContainer({ children, className = "" }) {',
   "  return (",
-  '    <div className={`w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 mx-auto max-w-[1400px] ${className}`}>',
+  '    <div className={`w-full min-w-0 px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl ${className}`}>',
   "      {children}",
   "    </div>",
   "  );",
@@ -21,7 +21,7 @@ const RESPONSIVE_HELPERS = [
   "  if ((cols.tablet ?? 2) !== (cols.mobile ?? 1)) classes.push(`sm:${columnMap[cols.tablet ?? 2]}`);",
   "  if ((cols.desktop ?? 3) !== (cols.tablet ?? 2)) classes.push(`lg:${columnMap[cols.desktop ?? 3]}`);",
   "  return (",
-  '    <div className={`grid w-full ${classes.join(" ")} ${gapMap[gap] ?? gapMap[6]} ${className}`}>',
+  '    <div className={`grid w-full min-w-0 [&>*]:min-w-0 ${classes.join(" ")} ${gapMap[gap] ?? gapMap[6]} ${className}`}>',
   "      {children}",
   "    </div>",
   "  );",
@@ -33,7 +33,7 @@ const RESPONSIVE_HELPERS = [
   '  const gapMap = { 0: "gap-0", 1: "gap-1", 2: "gap-2", 3: "gap-3", 4: "gap-4", 5: "gap-5", 6: "gap-6", 7: "gap-7", 8: "gap-8", 9: "gap-9", 10: "gap-10", 11: "gap-11", 12: "gap-12" };',
   '  const directionClass = direction.mobile === "col" && direction.desktop === "row" ? "flex-col lg:flex-row" : direction.mobile === "row" && direction.desktop === "col" ? "flex-row lg:flex-col" : direction.mobile === "col" ? "flex-col" : "flex-row";',
   "  return (",
-  '    <div className={`flex w-full ${directionClass} ${alignMap[align]} ${justifyMap[justify]} ${gapMap[gap] ?? gapMap[4]} ${className}`}>',
+  '    <div className={`flex w-full min-w-0 flex-wrap [&>*]:min-w-0 ${directionClass} ${alignMap[align]} ${justifyMap[justify]} ${gapMap[gap] ?? gapMap[4]} ${className}`}>',
   "      {children}",
   "    </div>",
   "  );",
@@ -65,15 +65,15 @@ const RESPONSIVE_HELPERS = [
   "  return (",
   '    <nav className="sticky top-0 z-50 w-full border-b border-black/10 bg-white">',
   "      <ResponsiveContainer>",
-  '        <div className="flex h-16 items-center justify-between lg:h-20">',
-  '          <div className="flex-shrink-0">{brandHref ? <a href={brandHref} className="inline-flex items-center">{logoNode}</a> : logoNode}</div>',
-  '          <div className="hidden items-center gap-8 lg:flex">{links.map((link) => <a key={link.href} href={link.href} className="font-medium text-gray-700 transition-colors hover:text-black">{link.label}</a>)}</div>',
-  '          <div className="hidden lg:block">{cta.href ? <ResponsiveButton href={cta.href}>{cta.label}</ResponsiveButton> : <ResponsiveButton onClick={cta.onClick}>{cta.label}</ResponsiveButton>}</div>',
-  '          <button type="button" onClick={() => setMobileMenuOpen((value) => !value)} className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-900 transition-colors hover:bg-black/5 lg:hidden" aria-expanded={mobileMenuOpen} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}>{mobileMenuOpen ? "Close" : "Menu"}</button>',
+  '        <div className="flex flex-col flex-wrap items-center justify-between gap-4 px-4 py-3 sm:flex-row">',
+  '          <div className="shrink-0">{brandHref ? <a href={brandHref} className="inline-flex items-center">{logoNode}</a> : logoNode}</div>',
+  '          <div className="hidden min-w-0 flex-1 flex-wrap items-center justify-center gap-4 sm:flex lg:gap-8">{links.map((link) => <a key={link.href} href={link.href} className="whitespace-nowrap font-medium text-gray-700 transition-colors hover:text-black">{link.label}</a>)}</div>',
+  '          <div className="hidden shrink-0 sm:block">{cta.href ? <ResponsiveButton href={cta.href} className="whitespace-nowrap">{cta.label}</ResponsiveButton> : <ResponsiveButton onClick={cta.onClick} className="whitespace-nowrap">{cta.label}</ResponsiveButton>}</div>',
+  '          <button type="button" onClick={() => setMobileMenuOpen((value) => !value)} className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-900 transition-colors hover:bg-black/5 sm:hidden" aria-expanded={mobileMenuOpen} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}>{mobileMenuOpen ? "Close" : "Menu"}</button>',
   "        </div>",
   "      </ResponsiveContainer>",
   "      {mobileMenuOpen ? (",
-  '        <div className="border-t border-black/10 bg-white lg:hidden">',
+  '        <div className="border-t border-black/10 bg-white sm:hidden">',
   "          <ResponsiveContainer>",
   '            <div className="space-y-3 py-4">{links.map((link) => <a key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className="block py-2 font-medium text-gray-700 transition-colors hover:text-black">{link.label}</a>)}{cta.href ? <ResponsiveButton href={cta.href}>{cta.label}</ResponsiveButton> : <ResponsiveButton onClick={cta.onClick}>{cta.label}</ResponsiveButton>}</div>',
   "          </ResponsiveContainer>",
@@ -84,12 +84,57 @@ const RESPONSIVE_HELPERS = [
   "}",
 ].join("\n");
 
+const unsafeBreakClass = "break" + "-all";
+const unsafeWordBreakPattern = new RegExp(`word-break\\s*:\\s*${unsafeBreakClass};?`, "gi");
+const unsafeWordBreakPropPattern = new RegExp(
+  `\\bwordBreak\\s*:\\s*["'\`]${unsafeBreakClass}["'\`],?\\s*`,
+  "g",
+);
+const unsafeBreakClassPattern = new RegExp(`\\b${unsafeBreakClass}\\b`, "g");
+
 function stripCodeFences(value: string) {
   return value.replace(/```(?:tsx?|jsx?|javascript|typescript)?/gi, "").replace(/```/g, "").trim();
 }
 
 function stripImports(value: string) {
   return value.replace(/^\s*import\s+.*$/gm, "").trim();
+}
+
+function stripFixedInlineLayoutStyles(code: string) {
+  return code
+    .replace(/\sstyle="([^"]*)"/g, (_match, styles: string) => {
+      const cleaned = styles
+        .replace(/\b(?:width|height|min-width|min-height|max-width|max-height)\s*:\s*\d+px;?/gi, "")
+        .replace(unsafeWordBreakPattern, "overflow-wrap: anywhere;")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      return cleaned ? ` style="${cleaned}"` : "";
+    })
+    .replace(/\sstyle=\{\{([^}]*)\}\}/g, (_match, styles: string) => {
+      const cleaned = styles
+        .replace(
+          /\b(?:width|height|minWidth|minHeight|maxWidth|maxHeight)\s*:\s*["'`]\d+px["'`],?\s*/g,
+          "",
+        )
+        .replace(unsafeWordBreakPropPattern, 'overflowWrap: "anywhere", ')
+        .replace(/,\s*,/g, ",")
+        .replace(/^\s*,|,\s*$/g, "")
+        .trim();
+
+      return cleaned ? ` style={{ ${cleaned} }}` : "";
+    });
+}
+
+function stripFixedLayoutClasses(code: string) {
+  return code
+    .replace(unsafeBreakClassPattern, "break-words")
+    .replace(/\bw-\[\d+px\]\b/g, "w-full")
+    .replace(/\bmin-w-\[\d+px\]\b/g, "min-w-0")
+    .replace(/\bmax-w-\[\d+px\]\b/g, "max-w-full")
+    .replace(/\bh-\[\d+px\]\b/g, "h-auto")
+    .replace(/\bmin-h-\[\d+px\]\b/g, "min-h-0")
+    .replace(/\bmax-h-\[\d+px\]\b/g, "max-h-none");
 }
 
 function mergeClassName(attrs: string, addition: string) {
@@ -126,7 +171,7 @@ function addResponsiveSections(code: string) {
   return code.replace(sectionPattern, (_match, attrs: string) =>
     `<section${mergeClassName(
       attrs,
-      "overflow-x-hidden py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32",
+      "w-full overflow-x-hidden px-4 py-12 sm:px-6 sm:py-16 md:py-20 lg:px-8 lg:py-24 xl:py-32",
     )}>`,
   );
 }
@@ -164,9 +209,16 @@ function addResponsiveButtons(code: string) {
 }
 
 function addResponsiveTypography(code: string) {
+  const withTextSafety = code.replace(/<(p|h1|h2|h3|h4|h5|h6)\b([^>]*)>/g, (_match, tagName, attrs: string) =>
+    `<${tagName}${mergeClassName(
+      attrs,
+      "min-w-0 whitespace-normal break-words hyphens-none",
+    )}>`,
+  );
+
   return Object.entries(HEADING_CLASSES).reduce(
     (acc, [tagName, classes]) => transformOpeningTag(acc, tagName as keyof typeof HEADING_CLASSES, classes),
-    code,
+    withTextSafety,
   );
 }
 
@@ -181,6 +233,8 @@ function injectPrelude(code: string) {
 export function makeResponsive(html: string) {
   let transformed = stripCodeFences(html);
   transformed = stripImports(transformed);
+  transformed = stripFixedInlineLayoutStyles(transformed);
+  transformed = stripFixedLayoutClasses(transformed);
   transformed = addResponsiveSections(transformed);
   transformed = addResponsiveTypography(transformed);
   transformed = addResponsiveImages(transformed);

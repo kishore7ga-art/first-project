@@ -1,5 +1,4 @@
-"use client";
-/* eslint-disable @next/next/no-img-element */
+'use client';
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -23,11 +22,6 @@ import {
   SiVercel,
 } from "react-icons/si";
 
-const fallbackUrls = [
-  "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=128&q=80",
-  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=128&q=80",
-];
-
 const iconConfigs = [
   { Icon: FaReact, color: "#61DAFB" },
   { Icon: FaAws, color: "#FF9900" },
@@ -44,9 +38,7 @@ const iconConfigs = [
   { Icon: FaGoogle, color: "#DB4437" },
   { Icon: FaApple, color: "#000000" },
   { Icon: SiFacebook, color: "#1877F2" },
-  { Icon: null, img: fallbackUrls[0] },
-  { Icon: null, img: fallbackUrls[1] },
-] as const;
+];
 
 export default function FeatureSection() {
   const orbitCount = 3;
@@ -54,27 +46,30 @@ export default function FeatureSection() {
   const iconsPerOrbit = Math.ceil(iconConfigs.length / orbitCount);
 
   return (
-    <section className="relative mx-auto my-32 flex min-h-[30rem] max-w-6xl flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white px-6 py-10 dark:border-gray-700 dark:bg-black sm:px-10 lg:h-[30rem] lg:flex-row lg:items-center lg:justify-between">
+    <section
+      id="features"
+      className="relative mx-auto my-32 flex h-auto max-w-6xl flex-col items-center justify-between overflow-hidden rounded-3xl border border-gray-200 bg-white px-8 py-10 dark:border-gray-700 dark:bg-black lg:h-[30rem] lg:flex-row lg:pl-10"
+    >
       <div className="z-10 w-full lg:w-1/2">
-        <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white sm:text-6xl">
+        <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white sm:text-6xl">
           Build your idea
-        </h1>
+        </h2>
         <p className="mb-6 max-w-lg text-gray-500 dark:text-gray-300">
-          Sections is a modern and responsive UI kit for React, Next.js, and Tailwind CSS.
+          A modern and responsive UI kit for React, Next.js, and Tailwind CSS.
         </p>
         <div className="flex items-center gap-3">
-          <Button asChild variant="default">
-            <Link href="/builder/demo-project">Get Started</Link>
+          <Button asChild>
+            <Link href="/builder">Get Started</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/marketplace">Learn More</Link>
+            <Link href="#gallery">Learn More</Link>
           </Button>
         </div>
       </div>
 
-      <div className="relative flex h-[24rem] w-full items-center justify-center overflow-hidden lg:h-full lg:w-1/2 lg:justify-start">
-        <div className="relative flex h-[36rem] w-[36rem] items-center justify-center sm:h-[50rem] sm:w-[50rem]">
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-50 shadow-lg dark:bg-gray-800">
+      <div className="relative flex h-full w-full items-center justify-start overflow-hidden lg:w-1/2">
+        <div className="relative flex h-[50rem] w-[50rem] translate-x-[50%] items-center justify-center">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-lg">
             <FaReact className="h-12 w-12 text-blue-400" />
           </div>
 
@@ -93,32 +88,26 @@ export default function FeatureSection() {
                 }}
               >
                 {iconConfigs
-                  .slice(orbitIdx * iconsPerOrbit, orbitIdx * iconsPerOrbit + iconsPerOrbit)
+                  .slice(
+                    orbitIdx * iconsPerOrbit,
+                    orbitIdx * iconsPerOrbit + iconsPerOrbit,
+                  )
                   .map((cfg, iconIdx) => {
                     const angle = iconIdx * angleStep;
-                    const x = 50 + 50 * Math.cos(angle);
-                    const y = 50 + 50 * Math.sin(angle);
+                    const x = (50 + 50 * Math.cos(angle)).toFixed(3);
+                    const y = (50 + 50 * Math.sin(angle)).toFixed(3);
 
                     return (
                       <div
                         key={iconIdx}
-                        className="absolute rounded-full bg-white p-1 shadow-md dark:bg-gray-800"
+                        className="absolute rounded-full bg-white p-1 shadow-md"
                         style={{
                           left: `${x}%`,
                           top: `${y}%`,
                           transform: "translate(-50%, -50%)",
                         }}
                       >
-                        {cfg.Icon ? (
-                          <cfg.Icon className="h-8 w-8" style={{ color: cfg.color }} />
-                        ) : (
-                          <img
-                            src={cfg.img}
-                            alt=""
-                            aria-hidden="true"
-                            className="h-8 w-8 object-contain"
-                          />
-                        )}
+                        <cfg.Icon className="h-8 w-8" style={{ color: cfg.color }} />
                       </div>
                     );
                   })}
@@ -133,6 +122,7 @@ export default function FeatureSection() {
           from {
             transform: rotate(0deg);
           }
+
           to {
             transform: rotate(360deg);
           }

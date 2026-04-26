@@ -108,7 +108,7 @@ function PublishModal({ open, onClose }: PublishModalProps) {
           </button>
         </div>
 
-        <div className="grid gap-0 md:grid-cols-[190px_1fr]">
+        <div className="grid grid-cols-1 gap-0 md:grid-cols-[minmax(0,32%)_minmax(0,1fr)]">
           <div className="border-b border-white/10 p-3 md:border-b-0 md:border-r">
             {(
               [
@@ -150,7 +150,7 @@ function PublishModal({ open, onClose }: PublishModalProps) {
                   <div className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-600">
                     Live URL
                   </div>
-                  <div className="mt-2 break-all text-sm text-zinc-300">
+                  <div className="mt-2 min-w-0 [overflow-wrap:anywhere] text-sm text-zinc-300">
                     {latestSlug
                       ? `${typeof window !== "undefined" ? window.location.origin : ""}/published/${latestSlug}`
                       : "Publish once to generate a preview URL."}
@@ -268,7 +268,7 @@ function VersionPanel({ open, onClose }: { open: boolean; onClose: () => void })
       />
       <aside
         className={cn(
-          "pointer-events-auto relative h-full w-[280px] border-l border-white/10 bg-zinc-950 p-4 shadow-2xl transition-transform",
+          "pointer-events-auto relative h-full w-full max-w-sm border-l border-white/10 bg-zinc-950 p-4 shadow-2xl transition-transform",
           open ? "translate-x-0" : "translate-x-full",
         )}
       >
@@ -545,7 +545,7 @@ export function BuilderWorkspace({
       onDragEnd={handleDragEnd}
     >
       <div className="relative h-dvh overflow-hidden bg-[#0A0A0A] text-white">
-        <header className="fixed inset-x-0 top-0 z-50 flex h-[60px] items-center justify-between border-b border-white/[0.08] bg-[#0A0A0A] px-4">
+        <header className="fixed inset-x-0 top-0 z-50 flex min-h-[60px] flex-wrap items-center justify-between gap-2 border-b border-white/[0.08] bg-[#0A0A0A] px-4 py-2">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -565,7 +565,7 @@ export function BuilderWorkspace({
             <input
               value={projectName}
               onChange={(event) => setProjectName(event.target.value)}
-              className="min-w-0 max-w-[118px] rounded-lg border border-transparent bg-transparent px-2 py-2 text-center text-[11px] font-bold text-zinc-200 outline-none transition hover:border-white/10 hover:bg-white/[0.03] focus:border-cyan-300/40 focus:bg-white/[0.05] sm:max-w-[280px] sm:px-3 sm:text-sm"
+              className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-2 text-center text-[11px] font-bold text-zinc-200 outline-none transition hover:border-white/10 hover:bg-white/[0.03] focus:border-cyan-300/40 focus:bg-white/[0.05] sm:max-w-sm sm:px-3 sm:text-sm"
               aria-label="Project name"
             />
             <div className="hidden items-center gap-1 rounded-lg border border-white/10 bg-white/[0.03] p-1 md:flex">
@@ -694,7 +694,7 @@ export function BuilderWorkspace({
         </header>
 
         <div
-          className="grid h-dvh grid-cols-1 pt-[60px] lg:grid-cols-[600px_minmax(0,1fr)]"
+          className="grid h-dvh grid-cols-1 pt-[60px] lg:grid-cols-[minmax(0,42%)_minmax(0,1fr)] xl:grid-cols-[minmax(0,38%)_minmax(0,1fr)]"
           style={themeStyles}
         >
           <LeftPanel mobileOpen={libraryOpen} onMobileClose={() => setLibraryOpen(false)} />

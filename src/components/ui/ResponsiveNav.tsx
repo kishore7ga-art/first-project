@@ -76,8 +76,8 @@ export function ResponsiveNav({
   return (
     <nav className={cn("sticky top-0 z-50 w-full border-b border-black/10 bg-white", className)}>
       <ResponsiveContainer>
-        <div className="flex h-16 items-center justify-between lg:h-20">
-          <div className="flex-shrink-0">
+        <div className="flex flex-col flex-wrap items-center justify-between gap-4 px-4 py-3 sm:flex-row">
+          <div className="shrink-0">
             {brandHref ? (
               <a href={brandHref} className="inline-flex items-center">
                 {logoNode}
@@ -87,30 +87,34 @@ export function ResponsiveNav({
             )}
           </div>
 
-          <div className="hidden items-center gap-8 lg:flex">
+          <div className="hidden min-w-0 flex-1 flex-wrap items-center justify-center gap-4 sm:flex lg:gap-8">
             {links.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="font-medium text-gray-700 transition-colors hover:text-black"
+                className="whitespace-nowrap font-medium text-gray-700 transition-colors hover:text-black"
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          <div className="hidden lg:block">
+          <div className="hidden shrink-0 sm:block">
             {cta.href ? (
-              <ResponsiveButton href={cta.href}>{cta.label}</ResponsiveButton>
+              <ResponsiveButton href={cta.href} className="whitespace-nowrap">
+                {cta.label}
+              </ResponsiveButton>
             ) : (
-              <ResponsiveButton onClick={cta.onClick}>{cta.label}</ResponsiveButton>
+              <ResponsiveButton onClick={cta.onClick} className="whitespace-nowrap">
+                {cta.label}
+              </ResponsiveButton>
             )}
           </div>
 
           <button
             type="button"
             onClick={() => setMobileMenuOpen((value) => !value)}
-            className="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-900 transition-colors hover:bg-black/5"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-900 transition-colors hover:bg-black/5 sm:hidden"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
@@ -120,7 +124,7 @@ export function ResponsiveNav({
       </ResponsiveContainer>
 
       {mobileMenuOpen ? (
-        <div className="border-t border-black/10 bg-white lg:hidden">
+        <div className="border-t border-black/10 bg-white sm:hidden">
           <ResponsiveContainer>
             <div className="space-y-3 py-4">
               {links.map((link) => (

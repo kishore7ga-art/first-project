@@ -7,6 +7,10 @@ import {
   sectionBlueprintMap,
   starterBlueprintIds,
 } from "@/builder/libraryData";
+import {
+  sanitizeCanvasSection,
+  sanitizeResponsiveLayoutValue,
+} from "@/builder/sanitizeLayout";
 import type {
   BrandKit,
   CanvasSection,
@@ -82,7 +86,7 @@ function createCanvasSection(blueprint: SectionBlueprint): CanvasSection {
     blueprintId: blueprint.id,
     type: blueprint.type,
     name: blueprint.name,
-    data: deepClone(blueprint.defaultData),
+    data: sanitizeResponsiveLayoutValue(deepClone(blueprint.defaultData)),
   };
 }
 
@@ -182,7 +186,9 @@ function getHydratedCanvasSections(
     );
   });
 
-  return validSections.length > 0 ? deepClone(validSections) : createStarterSections();
+  return validSections.length > 0
+    ? deepClone(validSections).map((section) => sanitizeCanvasSection(section))
+    : createStarterSections();
 }
 
 function getHydratedTheme(state?: Pick<BuilderState, "theme">): ThemeSettings {
@@ -243,7 +249,7 @@ export const useBuilderStore = create<BuilderState>()(
 
             return {
               ...pushHistory(state),
-              canvasSections: nextSections,
+              canvasSections: nextSections.map((section) => sanitizeCanvasSection(section)),
               lastEditedAt: touchState(),
             };
           }),
@@ -262,7 +268,7 @@ export const useBuilderStore = create<BuilderState>()(
 
             return {
               ...pushHistory(state),
-              canvasSections: nextSections,
+              canvasSections: nextSections.map((section) => sanitizeCanvasSection(section)),
               lastEditedAt: touchState(),
             };
           }),
@@ -270,7 +276,9 @@ export const useBuilderStore = create<BuilderState>()(
         removeSection: (id) =>
           set((state) => ({
             ...pushHistory(state),
-            canvasSections: state.canvasSections.filter((section) => section.id !== id),
+            canvasSections: state.canvasSections
+              .filter((section) => section.id !== id)
+              .map((section) => sanitizeCanvasSection(section)),
             lastEditedAt: touchState(),
           })),
 
@@ -291,7 +299,7 @@ export const useBuilderStore = create<BuilderState>()(
 
             return {
               ...pushHistory(state),
-              canvasSections: nextSections,
+              canvasSections: nextSections.map((section) => sanitizeCanvasSection(section)),
               lastEditedAt: touchState(),
             };
           }),
@@ -315,7 +323,7 @@ export const useBuilderStore = create<BuilderState>()(
 
             return {
               ...pushHistory(state),
-              canvasSections: nextSections,
+              canvasSections: nextSections.map((section) => sanitizeCanvasSection(section)),
               lastEditedAt: touchState(),
             };
           }),
@@ -323,7 +331,7 @@ export const useBuilderStore = create<BuilderState>()(
         replaceCanvasSections: (sections) =>
           set((state) => ({
             ...pushHistory(state),
-            canvasSections: deepClone(sections),
+            canvasSections: deepClone(sections).map((section) => sanitizeCanvasSection(section)),
             lastEditedAt: touchState(),
           })),
 
@@ -332,8 +340,14 @@ export const useBuilderStore = create<BuilderState>()(
             ...pushHistory(state),
             canvasSections: state.canvasSections.map((section) =>
               section.id === id
-                ? { ...section, data: { ...section.data, ...deepClone(partialData) } }
-                : section,
+                ? sanitizeCanvasSection({
+                    ...section,
+                    data: {
+                      ...section.data,
+                      ...sanitizeResponsiveLayoutValue(deepClone(partialData)),
+                    },
+                  })
+                : sanitizeCanvasSection(section),
             ),
             lastEditedAt: touchState(),
           })),
@@ -429,7 +443,9 @@ export const useBuilderStore = create<BuilderState>()(
             const snapshot: PublishedProject = {
               slug,
               projectName: state.projectName,
-              sections: deepClone(state.canvasSections),
+              sections: deepClone(state.canvasSections).map((section) =>
+                sanitizeCanvasSection(section),
+              ),
               theme: deepClone(state.theme),
               brandKit: deepClone(state.brandKit),
               publishedAt: touchState(),

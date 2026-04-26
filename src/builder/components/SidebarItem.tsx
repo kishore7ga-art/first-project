@@ -63,10 +63,7 @@ export function SidebarItem({ blueprint, onPreview, compact = false }: SidebarIt
     >
       <div
         className={cn(
-          "absolute left-0 top-0 origin-top-left pointer-events-none",
-          compact
-            ? "h-[820px] w-[1280px] scale-[0.18]"
-            : "h-[820px] w-[1280px] scale-[0.215] 2xl:scale-[0.225]",
+          "pointer-events-none absolute inset-0 h-full w-full",
         )}
       >
         <SectionReferencePreview blueprint={blueprint} />

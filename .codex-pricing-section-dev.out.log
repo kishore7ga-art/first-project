@@ -1,0 +1,20 @@
+
+> 123@0.1.0 dev
+> node --require ./scripts/webcontainer-shim.cjs node_modules/next/dist/bin/next dev --webpack --port 3011
+
+▲ Next.js 16.2.4 (webpack)
+- Local:         http://localhost:3011
+- Network:       http://10.139.163.238:3011
+- Environments: .env.local
+✓ Ready in 2.3s
+  next-swc build: wasm build @next/swc-wasm-nodejs
+  Skipping creating a lockfile at C:\Users\kisho\OneDrive\Desktop\fp 0g\.next\dev\lock because we're using WASM bindings
+
+▲ Next.js 16.2.4 (webpack)
+- Local:         http://localhost:3011
+- Network:       http://172.168.12.100:3011
+- Environments: .env.local
+✓ Ready in 2.0s
+  next-swc build: wasm build @next/swc-wasm-nodejs
+  Skipping creating a lockfile at C:\Users\kisho\OneDrive\Desktop\fp 0g\.next\dev\lock because we're using WASM bindings
+[?25h

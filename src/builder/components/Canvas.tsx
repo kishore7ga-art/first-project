@@ -7,12 +7,6 @@ import { useBuilderStore } from "@/store/useBuilderStore";
 import { cn } from "@/lib/utils";
 import { SortableSection } from "./SortableSection";
 
-const exactPreviewWidths = {
-  desktop: "1280px",
-  tablet: "768px",
-  mobile: "390px",
-} as const;
-
 interface CanvasProps {
   onOpenLibrary?: () => void;
 }
@@ -27,17 +21,19 @@ export function Canvas({ onOpenLibrary }: CanvasProps) {
   });
 
   return (
-    <div className="h-[calc(100dvh-60px)] overflow-auto bg-[#F4F4F5] px-3 py-5 sm:px-4 sm:py-8">
+    <div className="h-[calc(100dvh-60px)] overflow-x-hidden overflow-y-auto bg-[#F4F4F5] px-3 py-5 sm:px-4 sm:py-8">
       <div
         ref={setNodeRef}
-        className="mx-auto min-h-[calc(100dvh-124px)] bg-white shadow-[0_0_60px_rgba(0,0,0,0.12)] transition-all duration-200"
-        style={{ width: `min(100%, ${exactPreviewWidths[previewMode]})` }}
+        className={cn(
+          "preview-shell mx-auto min-h-[calc(100dvh-124px)] max-w-full bg-white shadow-[0_0_60px_rgba(0,0,0,0.12)] transition-[width] duration-200",
+          `preview-${previewMode}`,
+        )}
       >
         <SortableContext
           items={canvasSections.map((section) => section.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="builder-theme relative min-h-[calc(100dvh-124px)] bg-white">
+          <div className="builder-theme relative min-h-[calc(100dvh-124px)] w-full min-w-0 bg-white">
             {canvasSections.length === 0 ? (
               <div className="absolute inset-0 flex items-center justify-center p-6">
                 <div

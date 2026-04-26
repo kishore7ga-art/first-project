@@ -33,7 +33,11 @@ export function EditableText({
 
   if (readOnly) {
     const ReadOnlyTag = tagName as React.ElementType;
-    return tagName === "br" ? null : <ReadOnlyTag className={className}>{value}</ReadOnlyTag>;
+    return tagName === "br" ? null : (
+      <ReadOnlyTag className={cn("min-w-0 whitespace-normal break-words hyphens-none", className)}>
+        {value}
+      </ReadOnlyTag>
+    );
   }
 
   const multiline = tagName === "p" || tagName === "div";
@@ -52,7 +56,7 @@ export function EditableText({
       style={{ unicodeBidi: "plaintext" }}
       className={cn(
         "builder-editor cursor-text outline-none",
-        "p-1 -m-1",
+        "p-1 -m-1 min-w-0 whitespace-normal break-words hyphens-none",
         className,
       )}
       data-placeholder={placeholder}

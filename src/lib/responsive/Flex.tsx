@@ -77,7 +77,7 @@ export function ResponsiveFlex({
   return (
     <div
       className={cn(
-        "flex w-full",
+        "flex w-full min-w-0 flex-wrap [&>*]:min-w-0",
         resolveDirectionClasses(direction),
         alignClasses[align],
         justifyClasses[justify],

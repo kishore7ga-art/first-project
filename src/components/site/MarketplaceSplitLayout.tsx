@@ -395,7 +395,7 @@ function LazyPreviewFrame({ blueprint }: { blueprint: SectionBlueprint }) {
       className="relative h-full overflow-hidden rounded-[18px] border border-white/10 bg-[#F4F4F5]"
     >
       {previewVisible ? (
-        <div className="absolute left-0 top-0 h-[820px] w-[1280px] origin-top-left scale-[0.18]">
+        <div className="h-full w-full">
           <SectionReferencePreview blueprint={blueprint} />
         </div>
       ) : (
@@ -759,7 +759,7 @@ export function MarketplaceSplitLayout() {
       </header>
 
       <div className="min-h-0 flex-1">
-        <div className="hidden h-full min-h-0 md:grid md:grid-cols-[35%_65%] lg:grid-cols-[35%_65%]">
+        <div className="hidden h-full min-h-0 md:grid md:grid-cols-[minmax(0,35%)_minmax(0,65%)]">
           <TemplatePanel
             search={search}
             setSearch={setSearch}

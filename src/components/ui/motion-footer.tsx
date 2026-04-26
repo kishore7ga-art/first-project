@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { ArrowUp, Heart } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 
+// Register ScrollTrigger safely for React
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -132,21 +132,10 @@ const STYLES = `
 // -------------------------------------------------------------------------
 // 2. MAGNETIC BUTTON PRIMITIVE (Zero Dependency)
 // -------------------------------------------------------------------------
-export type MagneticButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+export type MagneticButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & 
   React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     as?: React.ElementType;
   };
-
-function assignRef(ref: React.ForwardedRef<HTMLElement>, node: HTMLElement | null) {
-  if (typeof ref === "function") {
-    ref(node);
-    return;
-  }
-
-  if (ref) {
-    ref.current = node;
-  }
-}
 
 const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
   ({ className, children, as: Component = "button", ...props }, forwardedRef) => {
@@ -198,13 +187,14 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
       }, element);
 
       return () => ctx.revert();
-    }, []);
+    },[]);
 
     return (
       <Component
         ref={(node: HTMLElement | null) => {
           localRef.current = node;
-          assignRef(forwardedRef, node);
+          if (typeof forwardedRef === "function") forwardedRef(node);
+          else if (forwardedRef) forwardedRef.current = node;
         }}
         className={cn("cursor-pointer", className)}
         {...props}
@@ -212,7 +202,7 @@ const MagneticButton = React.forwardRef<HTMLElement, MagneticButtonProps>(
         {children}
       </Component>
     );
-  },
+  }
 );
 MagneticButton.displayName = "MagneticButton";
 
@@ -239,7 +229,9 @@ export function CinematicFooter() {
     if (typeof window === "undefined") return;
     if (!wrapperRef.current) return;
 
+    // React strict mode compatible GSAP context cleanup
     const ctx = gsap.context(() => {
+      // Background Parallax
       gsap.fromTo(
         giantTextRef.current,
         { y: "10vh", scale: 0.8, opacity: 0 },
@@ -254,9 +246,10 @@ export function CinematicFooter() {
             end: "bottom bottom",
             scrub: 1,
           },
-        },
+        }
       );
 
+      // Staggered Content Reveal
       gsap.fromTo(
         [headingRef.current, linksRef.current],
         { y: 50, opacity: 0 },
@@ -271,12 +264,12 @@ export function CinematicFooter() {
             end: "bottom bottom",
             scrub: 1,
           },
-        },
+        }
       );
     }, wrapperRef);
 
     return () => ctx.revert();
-  }, []);
+  },[]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -285,117 +278,110 @@ export function CinematicFooter() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
-
+      
+      {/* 
+        The "Curtain Reveal" Wrapper:
+        It sits in standard flow. Because it has clip-path, its contents
+        are ONLY visible within its bounding box. 
+      */}
       <div
         ref={wrapperRef}
         className="relative h-screen w-full"
         style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
       >
+        {/* The actual footer stays fixed to the viewport underneath everything */}
         <footer className="fixed bottom-0 left-0 flex h-screen w-full flex-col justify-between overflow-hidden bg-background text-foreground cinematic-footer-wrapper">
-          <div className="footer-aurora pointer-events-none absolute left-1/2 top-1/2 z-0 h-[60vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 animate-footer-breathe rounded-[50%] blur-[80px]" />
-          <div className="footer-bg-grid pointer-events-none absolute inset-0 z-0" />
+          
+          {/* Ambient Light & Grid Background */}
+          <div className="footer-aurora absolute left-1/2 top-1/2 h-[60vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 animate-footer-breathe rounded-[50%] blur-[80px] pointer-events-none z-0" />
+          <div className="footer-bg-grid absolute inset-0 z-0 pointer-events-none" />
 
+          {/* Giant background text */}
           <div
             ref={giantTextRef}
-            className="footer-giant-bg-text pointer-events-none absolute -bottom-[5vh] left-1/2 z-0 select-none whitespace-nowrap -translate-x-1/2"
+            className="footer-giant-bg-text absolute -bottom-[5vh] left-1/2 -translate-x-1/2 whitespace-nowrap z-0 pointer-events-none select-none"
           >
             SOBERS
           </div>
 
-          <div className="absolute top-12 left-0 z-10 w-full -rotate-2 scale-110 overflow-hidden border-y border-border/50 bg-background/60 py-4 shadow-2xl backdrop-blur-md">
-            <div className="flex w-max animate-footer-scroll-marquee text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground md:text-sm">
+          {/* 1. Diagonal Sleek Marquee (Top of footer) */}
+          <div className="absolute top-12 left-0 w-full overflow-hidden border-y border-border/50 bg-background/60 backdrop-blur-md py-4 z-10 -rotate-2 scale-110 shadow-2xl">
+            <div className="flex w-max animate-footer-scroll-marquee text-xs md:text-sm font-bold tracking-[0.3em] text-muted-foreground uppercase">
               <MarqueeItem />
               <MarqueeItem />
             </div>
           </div>
 
-          <div className="relative z-10 mt-20 flex w-full flex-1 flex-col items-center justify-center px-6">
+          {/* 2. Main Center Content */}
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 mt-20 w-full max-w-5xl mx-auto">
             <h2
               ref={headingRef}
-              className="footer-text-glow mb-12 text-center text-5xl font-black tracking-tighter md:text-8xl"
+              className="text-5xl md:text-8xl font-black footer-text-glow tracking-tighter mb-12 text-center"
             >
               Ready to begin?
             </h2>
 
-            <div ref={linksRef} className="flex w-full flex-col items-center gap-6">
-              <div className="flex w-full flex-wrap justify-center gap-4">
-                <MagneticButton
-                  as="a"
-                  href="#"
-                  className="footer-glass-pill group flex items-center gap-3 rounded-full px-10 py-5 text-sm font-bold text-foreground md:text-base"
-                >
-                  <svg className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-foreground" viewBox="0 0 24 24" fill="currentColor">
+            {/* Interactive Magnetic Pills Layout */}
+            <div ref={linksRef} className="flex flex-col items-center gap-6 w-full">
+              {/* App Store Links (Primary) */}
+              <div className="flex flex-wrap justify-center gap-4 w-full">
+                <MagneticButton as="a" href="#" className="footer-glass-pill px-10 py-5 rounded-full text-foreground font-bold text-sm md:text-base flex items-center gap-3 group">
+                  <svg className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.04 2.26-.79 3.59-.76 1.56.04 2.87.67 3.55 1.76-3.13 1.77-2.62 5.92.35 7.14-.65 1.58-1.57 3.1-2.57 4.03zm-3.21-14.7c-.55 1.4-1.89 2.37-3.25 2.28.09-1.5 1.05-2.82 2.38-3.4 1.25-.57 2.66-.41 3.25.04-.15.35-.26.72-.38 1.08z" />
                   </svg>
                   Download iOS
                 </MagneticButton>
-
-                <MagneticButton
-                  as="a"
-                  href="#"
-                  className="footer-glass-pill group flex items-center gap-3 rounded-full px-10 py-5 text-sm font-bold text-foreground md:text-base"
-                >
-                  <svg className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-foreground" viewBox="0 0 24 24" fill="currentColor">
+                
+                <MagneticButton as="a" href="#" className="footer-glass-pill px-10 py-5 rounded-full text-foreground font-bold text-sm md:text-base flex items-center gap-3 group">
+                  <svg className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0004.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0004.5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0222 3.503C15.5902 8.242 13.8533 7.85 12 7.85c-1.8533 0-3.5902.392-5.1369 1.1004L4.841 5.4475a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3436-4.1021-2.6893-7.5743-6.1185-9.4396" />
                   </svg>
                   Download Android
                 </MagneticButton>
               </div>
 
-              <div className="mt-2 flex w-full flex-wrap justify-center gap-3 md:gap-6">
-                <MagneticButton
-                  as="a"
-                  href="#"
-                  className="footer-glass-pill rounded-full px-6 py-3 text-xs font-medium text-muted-foreground hover:text-foreground md:text-sm"
-                >
+              {/* Secondary Text Links */}
+              <div className="flex flex-wrap justify-center gap-3 md:gap-6 w-full mt-2">
+                <MagneticButton as="a" href="#" className="footer-glass-pill px-6 py-3 rounded-full text-muted-foreground font-medium text-xs md:text-sm hover:text-foreground">
                   Privacy Policy
                 </MagneticButton>
-                <MagneticButton
-                  as="a"
-                  href="#"
-                  className="footer-glass-pill rounded-full px-6 py-3 text-xs font-medium text-muted-foreground hover:text-foreground md:text-sm"
-                >
+                <MagneticButton as="a" href="#" className="footer-glass-pill px-6 py-3 rounded-full text-muted-foreground font-medium text-xs md:text-sm hover:text-foreground">
                   Terms of Service
                 </MagneticButton>
-                <MagneticButton
-                  as="a"
-                  href="#"
-                  className="footer-glass-pill rounded-full px-6 py-3 text-xs font-medium text-muted-foreground hover:text-foreground md:text-sm"
-                >
+                <MagneticButton as="a" href="#" className="footer-glass-pill px-6 py-3 rounded-full text-muted-foreground font-medium text-xs md:text-sm hover:text-foreground">
                   Support
                 </MagneticButton>
               </div>
             </div>
           </div>
 
-          <div className="relative z-20 flex w-full flex-col items-center justify-between gap-6 px-6 pb-8 md:flex-row md:px-12">
-            <div className="order-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground md:order-1 md:text-xs">
+          {/* 3. Bottom Bar / Credits */}
+          <div className="relative z-20 w-full pb-8 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            {/* Copyright */}
+            <div className="text-muted-foreground text-[10px] md:text-xs font-semibold tracking-widest uppercase order-2 md:order-1">
               © 2026 Volvox. All rights reserved.
             </div>
 
-            <div className="footer-glass-pill order-1 flex cursor-default items-center gap-2 rounded-full border-border/50 px-6 py-3 md:order-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground md:text-xs">
-                Crafted with
-              </span>
-              <Heart
-                className="animate-footer-heartbeat h-4 w-4 text-destructive md:h-5 md:w-5"
-                fill="currentColor"
-              />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground md:text-xs">
-                by
-              </span>
-              <span className="ml-1 text-xs font-black tracking-normal text-foreground md:text-sm">
-                Volvox
-              </span>
+            {/* "Made with Love" Badge */}
+            <div className="footer-glass-pill px-6 py-3 rounded-full flex items-center gap-2 order-1 md:order-2 cursor-default border-border/50">
+              <span className="text-muted-foreground text-[10px] md:text-xs font-bold uppercase tracking-widest">Crafted with</span>
+              <span className="animate-footer-heartbeat text-sm md:text-base text-destructive">❤</span>
+              <span className="text-muted-foreground text-[10px] md:text-xs font-bold uppercase tracking-widest">by</span>
+              <span className="text-foreground font-black text-xs md:text-sm tracking-normal ml-1">Volvox</span>
             </div>
 
+            {/* Back to top */}
             <MagneticButton
               as="button"
               onClick={scrollToTop}
-              className="footer-glass-pill group order-3 flex h-12 w-12 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+              className="w-12 h-12 rounded-full footer-glass-pill flex items-center justify-center text-muted-foreground hover:text-foreground group order-3"
             >
-              <ArrowUp className="h-5 w-5 transform transition-transform duration-300 group-hover:-translate-y-1.5" />
+              <svg className="w-5 h-5 transform group-hover:-translate-y-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+              </svg>
             </MagneticButton>
+
           </div>
         </footer>
       </div>

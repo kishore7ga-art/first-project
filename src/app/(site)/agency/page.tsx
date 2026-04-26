@@ -29,7 +29,7 @@ export default function AgencyPage() {
   return (
     <div className="min-h-dvh bg-[#09090B] text-white">
       <section className="border-b border-white/10 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-center">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.22em] text-zinc-500">
               <Building2 className="h-3.5 w-3.5 text-cyan-300" />
@@ -43,7 +43,7 @@ export default function AgencyPage() {
               publish workflow, and controlled collaboration experience.
             </p>
             <Link
-              href="/auth/signup"
+              href="/signup"
               className="mt-8 inline-flex rounded-lg bg-white px-5 py-3 text-sm font-black text-black"
             >
               Start agency workspace

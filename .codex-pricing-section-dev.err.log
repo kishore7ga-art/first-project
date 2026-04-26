@@ -1,0 +1,8 @@
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+Error: UNKNOWN: unknown error, unlink 'C:\Users\kisho\OneDrive\Desktop\fp 0g\.next\dev\server\vendor-chunks\gsap.js'
+    at Array.map (<anonymous>) {
+  errno: -4094,
+  code: 'UNKNOWN',
+  syscall: 'unlink',
+  path: 'C:\\Users\\kisho\\OneDrive\\Desktop\\fp 0g\\.next\\dev\\server\\vendor-chunks\\gsap.js'
+}

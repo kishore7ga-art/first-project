@@ -26,7 +26,7 @@ export default function StudioPage() {
         </div>
       </section>
 
-      <main className="mx-auto grid max-w-7xl gap-0 px-4 py-10 sm:px-6 lg:grid-cols-[240px_1fr_280px] lg:px-8">
+      <main className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-0 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,24%)_minmax(0,1fr)_minmax(0,28%)] lg:px-8">
         <aside className="rounded-t-2xl border border-white/10 bg-[#101014] p-4 lg:rounded-l-2xl lg:rounded-tr-none">
           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-600">
             Components

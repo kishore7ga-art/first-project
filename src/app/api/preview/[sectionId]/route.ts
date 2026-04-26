@@ -19,7 +19,7 @@ function renderFallbackHtml(sectionId: string) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.tailwindcss.com"></script>
-<style>*{margin:0;padding:0;box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}body{overflow-x:hidden;overflow-y:auto;font-family:Inter,Arial,sans-serif}img,video,iframe{max-width:100%;height:auto}</style>
+<style>*{margin:0;padding:0;box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}body{overflow-x:hidden;overflow-y:auto;font-family:Inter,Arial,sans-serif}img,video,iframe{display:block;max-width:100%;height:auto}p,h1,h2,h3,h4,h5,h6{overflow-wrap:break-word;word-break:normal;hyphens:none;white-space:normal}.container{width:100%;max-width:1280px;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}</style>
 </head><body>
 <section class="min-h-screen bg-[#09090B] text-white flex items-center justify-center p-16">
   <div class="max-w-4xl text-center">
@@ -63,7 +63,7 @@ export async function GET(
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&family=Space+Grotesk:wght@700;800&family=Syne:wght@700;800&family=JetBrains+Mono:wght@700&family=Outfit:wght@700;800&family=Raleway:wght@700&display=swap" rel="stylesheet">
-<style>*{margin:0;padding:0;box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}body{overflow-x:hidden;overflow-y:auto}img,video,iframe{max-width:100%;height:auto}</style>
+<style>*{margin:0;padding:0;box-sizing:border-box}html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}body{overflow-x:hidden;overflow-y:auto}img,video,iframe{display:block;max-width:100%;height:auto}p,h1,h2,h3,h4,h5,h6{overflow-wrap:break-word;word-break:normal;hyphens:none;white-space:normal}.container{width:100%;max-width:1280px;margin-left:auto;margin-right:auto;padding-left:1rem;padding-right:1rem}</style>
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>

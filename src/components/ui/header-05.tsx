@@ -186,13 +186,13 @@ function PhoneMenu() {
     <nav className="flex flex-col py-6">
       <div className="grid gap-2 border-b border-white/10 px-6 pb-5">
         <Link
-          href="/auth/signin"
+          href="/login"
           className="rounded-lg px-3 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-white/5 hover:text-white"
         >
           Sign In
         </Link>
         <Link
-          href="/auth/signup"
+          href="/signup"
           className="rounded-lg bg-white px-3 py-3 text-center text-sm font-bold text-black transition hover:bg-zinc-200"
         >
           Get Started
@@ -502,13 +502,13 @@ export function Header() {
             <ShoppingBag className="h-4 w-4" />
           </Link>
           <Link
-            href="/auth/signin"
+            href="/login"
             className="hidden rounded-lg px-4 py-2 text-sm font-semibold text-zinc-300 transition hover:bg-white/5 hover:text-white lg:inline-flex"
           >
             Sign In
           </Link>
           <Link
-            href="/auth/signup"
+            href="/signup"
             className="hidden rounded-lg bg-white px-4 py-2 text-sm font-bold text-black transition hover:bg-zinc-200 lg:inline-flex"
           >
             Get Started

@@ -93,9 +93,9 @@ export const colorPresets = [
 ];
 
 export const previewWidths: Record<PreviewMode, string> = {
-  desktop: "min(100%, 1180px)",
-  tablet: "min(100%, 820px)",
-  mobile: "min(100%, 420px)",
+  desktop: "100%",
+  tablet: "768px",
+  mobile: "375px",
 };
 
 const radiusScale: Record<BuilderRadius, { card: string; input: string }> = {

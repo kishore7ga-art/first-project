@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { availableSections, sectionBlueprintMap } from "@/builder/libraryData";
+import { sanitizeResponsiveLayoutValue } from "@/builder/sanitizeLayout";
 import type {
   BrandKit,
   BrandTone,
@@ -189,7 +190,9 @@ export function createCanvasSectionFromBlueprintId(
     blueprintId,
     type: blueprint.type,
     name: blueprint.name,
-    data: personalizeSectionData(blueprintId, normalizedBrandKit),
+    data: sanitizeResponsiveLayoutValue(
+      personalizeSectionData(blueprintId, normalizedBrandKit),
+    ),
   };
 }
 
@@ -509,12 +512,14 @@ export function personalizeSectionData(
 
       if (blueprint?.variantOf) {
         return {
-          ...deepClone(blueprint.defaultData),
-          ...deepClone(personalizeSectionData(blueprint.variantOf, brandKit)),
+          ...sanitizeResponsiveLayoutValue(deepClone(blueprint.defaultData)),
+          ...sanitizeResponsiveLayoutValue(
+            deepClone(personalizeSectionData(blueprint.variantOf, brandKit)),
+          ),
         };
       }
 
-      return deepClone(blueprint?.defaultData ?? {});
+      return sanitizeResponsiveLayoutValue(deepClone(blueprint?.defaultData ?? {}));
     }
   }
 }
@@ -525,7 +530,7 @@ export function personalizeCanvasSections(
 ) {
   return sections.map((section) => ({
     ...section,
-    data: personalizeSectionData(section.blueprintId, brandKit),
+    data: sanitizeResponsiveLayoutValue(personalizeSectionData(section.blueprintId, brandKit)),
   }));
 }
 

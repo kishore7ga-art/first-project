@@ -170,7 +170,7 @@ export function SectionReferencePreview({ blueprint }: SectionReferencePreviewPr
         {blueprint.type === "Hero" && (
           <MiniCard className={cn("h-full p-3", palette.card)}>
             {blueprint.id === "hero-2" ? (
-              <div className="grid h-full grid-cols-[1.3fr_0.8fr] gap-3">
+              <div className="grid h-full grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)] gap-3">
                 <div className="space-y-2">
                   <div className={cn("h-5 w-24 rounded-full", palette.support)} />
                   <MiniLine width="w-11/12" className={palette.accent} />
@@ -237,7 +237,7 @@ export function SectionReferencePreview({ blueprint }: SectionReferencePreviewPr
         {blueprint.type === "Features" && (
           <MiniCard className={cn("h-full p-3", palette.card)}>
             {blueprint.id === "features-2" ? (
-              <div className="grid h-full grid-cols-[0.9fr_1.1fr] gap-3">
+              <div className="grid h-full grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-3">
                 <div className="space-y-2">
                   <MiniLine width="w-9/12" className={palette.accent} />
                   <MiniLine width="w-7/12" className={palette.muted} />
@@ -331,7 +331,7 @@ export function SectionReferencePreview({ blueprint }: SectionReferencePreviewPr
         {blueprint.type === "CTA" && (
           <MiniCard className={cn("h-full p-3", palette.card)}>
             {blueprint.id === "cta-2" ? (
-              <div className="grid h-full grid-cols-[1.2fr_0.8fr] gap-3">
+              <div className="grid h-full grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] gap-3">
                 <div className="space-y-2">
                   <div className={cn("h-5 w-24 rounded-full", palette.support)} />
                   <MiniLine width="w-10/12" className={palette.accent} />
