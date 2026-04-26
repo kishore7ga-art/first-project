@@ -71,35 +71,42 @@ function TemplateCard({
   const previewBlueprint = sectionBlueprintMap[kit.sectionIds[0]] ?? availableSections[0]!;
 
   return (
-    <article className="template-card group relative overflow-hidden rounded-xl border border-white/10 bg-zinc-900 hover:border-white/20">
-      <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
-        <div className="pointer-events-none h-full w-full">
+    <article className="template-card group relative overflow-hidden rounded-2xl border border-white/5 bg-zinc-900/50 hover:border-indigo-500/30 transition-all duration-300">
+      <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950">
+        <div className="pointer-events-none h-full w-full opacity-80 group-hover:opacity-100 transition-opacity">
           <SectionReferencePreview blueprint={previewBlueprint} />
         </div>
 
-        <div className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+        <div className="absolute right-3 top-3 z-10 rounded-lg bg-indigo-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.15em] text-white shadow-lg shadow-indigo-500/20">
           {kit.access === "free" ? "FREE" : kit.priceLabel}
         </div>
       </div>
 
-      <div className="p-3 2xl:p-4">
-        <h3 className="text-sm font-semibold text-white">{kit.name}</h3>
-        <p className="mt-1 max-h-10 overflow-hidden text-xs leading-5 text-white/50">
-          {kit.description}
-        </p>
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-base font-black text-white tracking-tight truncate">{kit.name}</h3>
+            <p className="mt-1 text-xs leading-5 text-zinc-500 line-clamp-2">
+              {kit.description}
+            </p>
+          </div>
+        </div>
 
-        <div className="mt-3 flex items-center justify-between text-[11px] text-white/45">
-          <span>{kit.sectionIds.length} sections</span>
-          <span className="uppercase tracking-[0.18em]">{kit.access}</span>
+        <div className="mt-4 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-600">
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+            {kit.sectionIds.length} blocks
+          </div>
+          <span className="px-2 py-0.5 rounded-md bg-white/[0.03]">{kit.access}</span>
         </div>
 
         <button
           type="button"
           onClick={() => onUseTemplate(kit)}
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black transition hover:bg-white/90"
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black text-black transition-all hover:bg-zinc-100 hover:scale-[1.02] active:scale-[0.98]"
         >
-          Use template
-          <ArrowRight className="h-3.5 w-3.5" />
+          Use Template
+          <ArrowRight className="h-4 w-4" />
         </button>
       </div>
     </article>
@@ -146,20 +153,20 @@ function SectionFilters({
   setActiveStyle: (value: (typeof styles)[number]) => void;
 }) {
   return (
-    <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
+    <div className="flex-shrink-0 border-b border-white/5 bg-[#0F0F0F]/50 px-4 py-5 space-y-4">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#555]" />
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-600" />
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search sections..."
-          className="h-10 w-full rounded-lg border border-[#2A2A2A] bg-[#1A1A1A] pl-9 pr-9 text-sm text-white outline-none placeholder:text-[#555] focus:border-white/20"
+          placeholder="Search blocks..."
+          className="h-11 w-full rounded-xl border border-white/5 bg-zinc-900/50 pl-10 pr-10 text-sm text-white outline-none transition-all placeholder:text-zinc-600 focus:border-indigo-500/30 focus:bg-zinc-900 focus:ring-1 focus:ring-indigo-500/20"
         />
         {search ? (
           <button
             type="button"
             onClick={() => setSearch("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-[#555] hover:bg-white/5 hover:text-white"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 hover:bg-white/5 hover:text-white"
             aria-label="Clear search"
           >
             <X className="h-4 w-4" />
@@ -167,43 +174,52 @@ function SectionFilters({
         ) : null}
       </div>
 
-      <div className="mt-3 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {categories.map((category) => (
-          <button
-            key={category}
-            type="button"
-            onClick={() => setActiveCategory(category)}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition",
-              activeCategory === category
-                ? "bg-white text-black"
-                : "bg-transparent text-zinc-500 hover:text-zinc-200",
-            )}
-          >
-            {category}
-          </button>
-        ))}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">Category</span>
+          <span className="text-[10px] font-bold text-indigo-400">{activeCategory}</span>
+        </div>
+        <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mask-fade-right">
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveCategory(category)}
+              className={cn(
+                "shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all",
+                activeCategory === category
+                  ? "bg-white text-black shadow-lg"
+                  : "bg-white/[0.03] text-zinc-500 border border-white/5 hover:bg-white/[0.06] hover:text-zinc-300",
+              )}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-[#555]">
-          Style:
-        </span>
-        {styles.map((style) => (
-          <button
-            key={style}
-            type="button"
-            onClick={() => setActiveStyle(style)}
-            className={cn(
-              "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition",
-              activeStyle === style
-                ? "bg-white text-black"
-                : "bg-transparent text-zinc-500 hover:text-zinc-200",
-            )}
-          >
-            {style}
-          </button>
-        ))}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">Style</span>
+          <span className="text-[10px] font-bold text-indigo-400">{activeStyle}</span>
+        </div>
+        <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mask-fade-right">
+          {styles.map((style) => (
+            <button
+              key={style}
+              type="button"
+              onClick={() => setActiveStyle(style)}
+              className={cn(
+                "shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all",
+                activeStyle === style
+                  ? "bg-white text-black shadow-lg"
+                  : "bg-white/[0.03] text-zinc-500 border border-white/5 hover:bg-white/[0.06] hover:text-zinc-300",
+              )}
+            >
+              {style}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -347,6 +363,7 @@ export function LeftPanel({ mobileOpen = false, onMobileClose }: LeftPanelProps)
   const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>("All");
   const [activeStyle, setActiveStyle] = useState<(typeof styles)[number]>("All");
   const [previewBlueprint, setPreviewBlueprint] = useState<SectionBlueprint | null>(null);
+  const [activeView, setActiveView] = useState<"templates" | "sections">("templates");
   const activeTab = useBuilderStore((state) => state.activeTab);
   const brandKit = useBuilderStore((state) => state.brandKit);
   const replaceCanvasSections = useBuilderStore((state) => state.replaceCanvasSections);
@@ -386,13 +403,36 @@ export function LeftPanel({ mobileOpen = false, onMobileClose }: LeftPanelProps)
 
   return (
     <>
-      <aside className="hidden h-[calc(100dvh-60px)] w-full min-w-0 flex-col overflow-hidden border-r border-white/[0.06] bg-[#111111] lg:flex">
-        <div className="flex h-full w-full">
-          <div className="w-1/2 min-w-0 overflow-hidden border-r border-white/10">
-            <TemplatesPanel onUseTemplate={applyTemplate} />
-          </div>
+      <aside className="hidden h-[calc(100dvh-60px)] w-full min-w-0 flex-col overflow-hidden border-r border-white/[0.06] bg-[#0A0A0A] lg:flex">
+        <div className="flex flex-shrink-0 border-b border-white/10 bg-[#0F0F0F]">
+          <button
+            onClick={() => setActiveView("templates")}
+            className={cn(
+              "flex-1 py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all",
+              activeView === "templates" 
+                ? "bg-white/5 text-white border-b-2 border-indigo-500" 
+                : "text-zinc-600 hover:text-zinc-400"
+            )}
+          >
+            Templates
+          </button>
+          <button
+            onClick={() => setActiveView("sections")}
+            className={cn(
+              "flex-1 py-4 text-[11px] font-black uppercase tracking-[0.2em] transition-all",
+              activeView === "sections" 
+                ? "bg-white/5 text-white border-b-2 border-indigo-500" 
+                : "text-zinc-600 hover:text-zinc-400"
+            )}
+          >
+            Sections
+          </button>
+        </div>
 
-          <div className="w-1/2 min-w-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {activeView === "templates" ? (
+            <TemplatesPanel onUseTemplate={applyTemplate} showHeader={false} />
+          ) : (
             <SectionsPanel
               filteredSections={filteredSections}
               search={search}
@@ -402,8 +442,9 @@ export function LeftPanel({ mobileOpen = false, onMobileClose }: LeftPanelProps)
               activeStyle={activeStyle}
               setActiveStyle={setActiveStyle}
               onPreview={(blueprint) => setPreviewBlueprint(blueprint)}
+              showHeader={false}
             />
-          </div>
+          )}
         </div>
       </aside>
 

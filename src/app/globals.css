@@ -383,3 +383,77 @@ input[type="password"]::-ms-clear {
     transform: rotate(360deg);
   }
 }
+.mask-fade-right {
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.mask-fade-bottom {
+  mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+}
+
+.builder-reset-btn {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 50;
+}
+
+/* Mobile Preview Overrides */
+.preview-mobile .builder-heading {
+  font-size: 1.25rem !important;
+  line-height: 1.2 !important;
+}
+
+.preview-mobile .grid {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  gap: 1.5rem !important;
+}
+
+.preview-mobile .builder-section {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.preview-mobile [class*="grid-cols-"] {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+.preview-mobile .container,
+.preview-mobile .max-w-7xl,
+.preview-mobile .max-w-4xl,
+.preview-mobile .max-w-3xl {
+  max-width: 100% !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.preview-mobile .flex {
+  flex-direction: column !important;
+}
+
+.preview-mobile .flex-row,
+.preview-mobile [class*="flex-row"] {
+  flex-direction: column !important;
+}
+
+.preview-mobile .flex.items-center,
+.preview-mobile .flex.justify-between {
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+}
+
+.preview-mobile .builder-theme {
+  overflow-x: hidden;
+}
+
+.preview-mobile .flex-row {
+  flex-direction: column !important;
+}
+
+.preview-mobile .sm\:flex-row {
+  flex-direction: column !important;
+}
+
+.preview-mobile .lg\:flex-row {
+  flex-direction: column !important;
+}

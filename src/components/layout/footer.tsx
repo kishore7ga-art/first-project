@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Blocks } from "lucide-react";
+import Image from "next/image";
 
 const groups = [
   {
@@ -34,10 +34,10 @@ export function Footer() {
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div>
           <Link href="/" className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-black">
-              <Blocks className="h-5 w-5" />
+            <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white">
+              <Image src="/logo.png" alt="Zelmora Logo" width={40} height={40} className="object-cover" />
             </span>
-            <span className="text-lg font-black text-white">Sections</span>
+            <span className="text-lg font-black text-white">Zelmora</span>
           </Link>
           <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">
             A drag-and-drop website builder with a growing section marketplace,
@@ -67,7 +67,7 @@ export function Footer() {
       </div>
 
       <div className="mx-auto mt-12 flex max-w-7xl flex-col gap-3 border-t border-white/10 px-4 pt-6 text-sm text-zinc-600 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
-        <p>(c) 2026 Sections. Free forever beta.</p>
+        <p>(c) 2026 Zelmora. Free forever beta.</p>
         <p>Free forever. No credit card. Publish instantly.</p>
       </div>
     </footer>

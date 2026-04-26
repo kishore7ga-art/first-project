@@ -16,38 +16,31 @@ type Testimonial = {
 const testimonials: Testimonial[] = [
   {
     quote:
-      "This platform revolutionized our data analysis process. The speed and accuracy are unparalleled. A must-have for any data-driven team.",
-    name: "Priya Sharma",
-    designation: "Data Scientist at QuantumLeap",
-    src: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop",
+      "Our mission at Zelmora is to democratize high-end web design. We're building the future where anyone can create a cinematic web experience in minutes.",
+    name: "Maheshwari.P",
+    designation: "CEO of Zenix",
+    src: "/team/ceo.png",
   },
   {
     quote:
-      "The user interface is incredibly intuitive. We were up and running in hours, not days. Truly exceptional onboarding experience.",
-    name: "Marcus Johnson",
-    designation: "Head of Operations at Synergy Corp",
-    src: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=400&auto=format&fit=crop",
+      "The vision for Zelmora was born from a need for speed and beauty. We wanted to eliminate the barrier between imagination and reality.",
+    name: "Kishore.GA",
+    designation: "Founder of Zenix",
+    src: "/team/founder1.png",
   },
   {
     quote:
-      "Customer support is top-notch. They are responsive, knowledgeable, and genuinely invested in our success.",
-    name: "Isabella Rossi",
-    designation: "Client Success Manager at Horizon",
-    src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop",
+      "We've combined the power of AI with elite design standards to give creators a toolkit that feels like magic.",
+    name: "Santhosh.M",
+    designation: "Founder of Zenix",
+    src: "/team/founder2.png",
   },
   {
     quote:
-      "I am impressed by the constant stream of updates and new features. The team clearly listens to user feedback.",
-    name: "Kenji Tanaka",
-    designation: "Software Engineer at CodeCrafters",
-    src: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=400&auto=format&fit=crop",
-  },
-  {
-    quote:
-      "The ROI was almost immediate. We cut project delivery times by nearly 30 percent. Absolutely worth every penny.",
-    name: "Fatima Al-Jamil",
-    designation: "CFO at Apex Financial",
-    src: "https://images.unsplash.com/photo-1557053910-d9eadeed1c58?q=80&w=400&auto=format&fit=crop",
+      "Technically, Zelmora is pushed to the limit of what's possible in the browser. Our stack is optimized for performance and fluid animations.",
+    name: "Akash.K",
+    designation: "CTO of Zenix",
+    src: "/team/cto.png",
   },
 ];
 
@@ -81,10 +74,10 @@ export function AnimatedTestimonials({
   const getRotate = (index: number) => `${((index * 7) % 16) - 8}deg`;
 
   return (
-    <div className="mx-auto max-w-sm px-4 py-20 font-sans antialiased md:max-w-4xl md:px-8 lg:px-12">
-      <div className="relative grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-20">
+    <div className="mx-auto max-w-7xl px-4 py-20 font-sans antialiased md:px-8 lg:px-12">
+      <div className="relative grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-32">
         <div className="flex items-center justify-center">
-          <div className="relative h-80 w-full max-w-xs">
+          <div className="relative h-[450px] w-full max-w-sm md:h-[550px] md:max-w-md">
             <AnimatePresence>
               {testimonials.map((testimonial, index) => (
                 <motion.div
@@ -134,13 +127,13 @@ export function AnimatedTestimonials({
               className="flex flex-col justify-between"
             >
               <div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                <h3 className="text-4xl font-bold text-slate-900 dark:text-slate-50 md:text-5xl">
                   {testimonials[active].name}
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-lg text-slate-600 dark:text-slate-400 md:text-xl">
                   {testimonials[active].designation}
                 </p>
-                <p className="mt-8 text-lg text-slate-700 dark:text-slate-300">
+                <p className="mt-8 text-xl leading-relaxed text-slate-700 dark:text-slate-300 md:text-3xl">
                   &ldquo;{testimonials[active].quote}&rdquo;
                 </p>
               </div>
@@ -173,7 +166,7 @@ export function Component() {
   return (
     <div
       id="testimonials"
-      className="relative flex w-full items-center justify-center overflow-hidden bg-slate-50 py-12 dark:bg-slate-950"
+      className="relative flex w-full items-center justify-center overflow-hidden bg-[#030303] py-24"
     >
       <AnimatedTestimonials testimonials={testimonials} />
     </div>

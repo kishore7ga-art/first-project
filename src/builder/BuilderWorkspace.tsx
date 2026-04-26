@@ -1,6 +1,7 @@
 "use client";
 
 import { startTransition, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   closestCenter,
   DndContext,
@@ -555,10 +556,10 @@ export function BuilderWorkspace({
             >
               <Menu className="h-4 w-4" />
             </button>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black">
-              <Blocks className="h-4 w-4" />
+            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+              <Image src="/logo.png" alt="Zelmora Logo" width={36} height={36} className="h-full w-full object-cover" />
             </div>
-            <div className="hidden font-black sm:block">Sections</div>
+            <div className="hidden font-black sm:block text-white tracking-tighter text-lg uppercase">Zelmora</div>
           </div>
 
           <div className="flex min-w-0 flex-1 items-center justify-center gap-2 px-2 sm:gap-3 sm:px-4">
@@ -694,7 +695,7 @@ export function BuilderWorkspace({
         </header>
 
         <div
-          className="grid h-dvh grid-cols-1 pt-[60px] lg:grid-cols-[minmax(0,42%)_minmax(0,1fr)] xl:grid-cols-[minmax(0,38%)_minmax(0,1fr)]"
+          className="grid h-dvh grid-cols-1 pt-[60px] lg:grid-cols-[380px_1fr]"
           style={themeStyles}
         >
           <LeftPanel mobileOpen={libraryOpen} onMobileClose={() => setLibraryOpen(false)} />
@@ -749,7 +750,7 @@ export function BuilderWorkspace({
         <button
           type="button"
           onClick={() => resetToStarter()}
-          className="fixed bottom-5 left-5 z-30 hidden rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs font-bold text-zinc-500 backdrop-blur transition hover:text-white lg:block"
+          className="builder-reset-btn hidden rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs font-bold text-zinc-500 backdrop-blur transition hover:text-white lg:block"
         >
           Reset starter
         </button>

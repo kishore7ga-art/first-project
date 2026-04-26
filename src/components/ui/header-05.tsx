@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowUpRight,
   Blocks,
@@ -484,10 +485,10 @@ export function Header() {
     <header className="sticky top-0 z-50 flex h-[72px] w-full justify-center border-b border-white/10 bg-[#09090B]/80 backdrop-blur-xl">
       <div className="flex w-full max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" aria-label="home" className="flex items-center gap-3 whitespace-nowrap px-2">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white text-black">
-            <Blocks className="h-5 w-5" />
+          <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white">
+            <Image src="/logo.png" alt="Zelmora Logo" width={40} height={40} className="object-cover" />
           </span>
-          <span className="text-lg font-black tracking-tight text-white">Sections</span>
+          <span className="text-lg font-black tracking-tight text-white">Zelmora</span>
         </Link>
 
         <Menus />

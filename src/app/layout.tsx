@@ -3,9 +3,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sections | Drag and drop website builder",
+  title: "Zelmora | High-Performance Website Builder",
   description:
-    "Browse beautiful sections, drag them onto a canvas, remix with AI, and publish polished websites without code.",
+    "Zelmora is the next-generation website builder that lets you drag, drop, and remix premium sections with AI.",
 };
 
 export default function RootLayout({

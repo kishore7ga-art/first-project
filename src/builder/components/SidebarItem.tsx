@@ -119,16 +119,16 @@ export function SidebarItem({ blueprint, onPreview, compact = false }: SidebarIt
         </div>
       ) : (
         <>
-          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/80 to-transparent p-3 pt-10">
+          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/80 to-transparent p-3 pt-12">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <div className="truncate text-[11px] font-bold text-white">{blueprint.name}</div>
-                <div className="mt-0.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                <div className="truncate text-xs font-black text-white tracking-tight">{blueprint.name}</div>
+                <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">
                   {blueprint.type}
                 </div>
               </div>
-              <span
-                className="h-2.5 w-2.5 shrink-0 rounded-full"
+              <div
+                className="h-2 w-2 shrink-0 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                 style={{ backgroundColor: color }}
               />
             </div>

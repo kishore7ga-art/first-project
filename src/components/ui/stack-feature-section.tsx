@@ -48,33 +48,33 @@ export default function FeatureSection() {
   return (
     <section
       id="features"
-      className="relative mx-auto my-32 flex h-auto max-w-6xl flex-col items-center justify-between overflow-hidden rounded-3xl border border-gray-200 bg-white px-8 py-10 dark:border-gray-700 dark:bg-black lg:h-[30rem] lg:flex-row lg:pl-10"
+      className="relative mx-auto my-32 flex h-auto max-w-screen-2xl flex-col items-center justify-between overflow-hidden rounded-[3rem] border border-gray-200 bg-white px-12 py-24 dark:border-white/10 dark:bg-black lg:h-[50rem] lg:flex-row lg:pl-20"
     >
       <div className="z-10 w-full lg:w-1/2">
-        <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white sm:text-6xl">
+        <h2 className="mb-8 text-6xl font-black text-gray-900 dark:text-white sm:text-8xl tracking-tighter leading-none">
           Build your idea
         </h2>
-        <p className="mb-6 max-w-lg text-gray-500 dark:text-gray-300">
+        <p className="mb-10 max-w-xl text-xl text-gray-500 dark:text-gray-400 leading-relaxed">
           A modern and responsive UI kit for React, Next.js, and Tailwind CSS.
         </p>
-        <div className="flex items-center gap-3">
-          <Button asChild>
+        <div className="flex items-center gap-6">
+          <Button asChild size="lg" className="rounded-full px-8 py-6 text-lg">
             <Link href="/builder">Get Started</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="lg" className="rounded-full px-8 py-6 text-lg">
             <Link href="#gallery">Learn More</Link>
           </Button>
         </div>
       </div>
 
       <div className="relative flex h-full w-full items-center justify-start overflow-hidden lg:w-1/2">
-        <div className="relative flex h-[50rem] w-[50rem] translate-x-[50%] items-center justify-center">
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-lg">
-            <FaReact className="h-12 w-12 text-blue-400" />
+        <div className="relative flex h-[80rem] w-[80rem] translate-x-[50%] items-center justify-center">
+          <div className="flex h-40 w-40 items-center justify-center rounded-full bg-white shadow-[0_0_50px_rgba(255,255,255,0.3)]">
+            <FaReact className="h-20 w-20 text-blue-400" />
           </div>
 
           {[...Array(orbitCount)].map((_, orbitIdx) => {
-            const size = `${12 + orbitGap * (orbitIdx + 1)}rem`;
+            const size = `${20 + orbitGap * (orbitIdx + 2)}rem`;
             const angleStep = (2 * Math.PI) / iconsPerOrbit;
 
             return (
@@ -107,7 +107,7 @@ export default function FeatureSection() {
                           transform: "translate(-50%, -50%)",
                         }}
                       >
-                        <cfg.Icon className="h-8 w-8" style={{ color: cfg.color }} />
+                        <cfg.Icon className="h-12 w-12" style={{ color: cfg.color }} />
                       </div>
                     );
                   })}

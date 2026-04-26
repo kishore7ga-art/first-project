@@ -21,12 +21,12 @@ export function ArcGalleryHero({
   images,
   startAngle = 20,
   endAngle = 160,
-  radiusLg = 480,
-  radiusMd = 360,
-  radiusSm = 260,
-  cardSizeLg = 120,
-  cardSizeMd = 100,
-  cardSizeSm = 80,
+  radiusLg = 800,
+  radiusMd = 600,
+  radiusSm = 400,
+  cardSizeLg = 250,
+  cardSizeMd = 200,
+  cardSizeSm = 150,
   className = "",
 }: ArcGalleryHeroProps) {
   const [dimensions, setDimensions] = React.useState({
@@ -107,25 +107,19 @@ export function ArcGalleryHero({
         </div>
       </div>
 
-      <div className="relative z-10 mt-8 flex flex-1 items-center justify-center px-6">
+      <div className="relative z-10 mt-12 flex flex-1 items-center justify-center px-6">
         <div
-          className="animate-fade-in max-w-2xl px-6 text-center opacity-0"
+          className="animate-fade-in max-w-screen-2xl px-6 text-center opacity-0"
           style={{ animationDelay: "800ms", animationFillMode: "forwards" }}
         >
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Rediscover Your Memories
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-[9rem] leading-none tracking-tighter">
+            Power of Zelmora
           </h2>
           <p className="mt-4 text-lg text-gray-400">
             Our intelligent platform finds, organizes, and brings your most cherished
             moments back to life.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <button className="w-full rounded-full bg-indigo-600 px-6 py-3 text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl sm:w-auto">
-              Explore Now
-            </button>
-            <button className="w-full rounded-full border border-white/20 px-6 py-3 text-white transition-all duration-200 hover:bg-white/10 sm:w-auto">
-              How It Works
-            </button>
           </div>
         </div>
       </div>

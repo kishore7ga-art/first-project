@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Blocks, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -23,10 +24,10 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#09090B]/78 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl flex-col flex-wrap items-center justify-between gap-4 px-4 py-3 sm:flex-row sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white text-black">
-            <Blocks className="h-5 w-5" />
+          <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white">
+            <Image src="/logo.png" alt="Zelmora Logo" width={40} height={40} className="object-cover" />
           </span>
-          <span className="text-lg font-black tracking-tight text-white">Sections</span>
+          <span className="text-lg font-black tracking-tight text-white">Zelmora</span>
         </Link>
 
         <div className="hidden min-w-0 flex-1 flex-wrap items-center justify-center gap-4 sm:flex lg:gap-8">

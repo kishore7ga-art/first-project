@@ -71,7 +71,7 @@ function ElegantShape({
 }
 
 function HeroGeometric({
-  badge = "Design Collective",
+  badge = "",
   title1 = "Elevate Your Digital Vision",
   title2 = "Crafting Exceptional Websites",
 }: {
@@ -99,8 +99,8 @@ function HeroGeometric({
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
           delay={0.3}
-          width={600}
-          height={140}
+          width={1200}
+          height={280}
           rotate={12}
           gradient="from-indigo-500/[0.15]"
           className="left-[-10%] top-[15%] md:left-[-5%] md:top-[20%]"
@@ -108,8 +108,8 @@ function HeroGeometric({
 
         <ElegantShape
           delay={0.5}
-          width={500}
-          height={120}
+          width={1000}
+          height={240}
           rotate={-15}
           gradient="from-rose-500/[0.15]"
           className="right-[-5%] top-[70%] md:right-[0%] md:top-[75%]"
@@ -117,8 +117,8 @@ function HeroGeometric({
 
         <ElegantShape
           delay={0.4}
-          width={300}
-          height={80}
+          width={600}
+          height={160}
           rotate={-8}
           gradient="from-violet-500/[0.15]"
           className="bottom-[5%] left-[5%] md:bottom-[10%] md:left-[10%]"
@@ -126,8 +126,8 @@ function HeroGeometric({
 
         <ElegantShape
           delay={0.6}
-          width={200}
-          height={60}
+          width={400}
+          height={120}
           rotate={20}
           gradient="from-amber-500/[0.15]"
           className="right-[15%] top-[10%] md:right-[20%] md:top-[15%]"
@@ -135,8 +135,8 @@ function HeroGeometric({
 
         <ElegantShape
           delay={0.7}
-          width={150}
-          height={40}
+          width={300}
+          height={80}
           rotate={-25}
           gradient="from-cyan-500/[0.15]"
           className="left-[20%] top-[5%] md:left-[25%] md:top-[10%]"
@@ -144,17 +144,19 @@ function HeroGeometric({
       </div>
 
       <div className="relative z-10 container mx-auto px-4 md:px-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <motion.div
-            custom={0}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 md:mb-12"
-          >
-            <Circle className="h-2 w-2 fill-rose-500/80" />
-            <span className="tracking-wide text-white/60 text-sm">{badge}</span>
-          </motion.div>
+        <div className="mx-auto max-w-screen-2xl text-center">
+          {badge && (
+            <motion.div
+              custom={0}
+              variants={fadeUpVariants}
+              initial="hidden"
+              animate="visible"
+              className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 md:mb-12"
+            >
+              <Circle className="h-2 w-2 fill-rose-500/80" />
+              <span className="tracking-wide text-white/60 text-sm">{badge}</span>
+            </motion.div>
+          )}
 
           <motion.div
             custom={1}
@@ -162,7 +164,7 @@ function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl md:mb-8 md:text-8xl">
+            <h1 className="mb-8 text-5xl font-black tracking-tighter sm:text-7xl md:mb-12 md:text-[6rem] leading-[0.85]">
               <span className="bg-gradient-to-b from-white to-white/80 bg-clip-text text-transparent">
                 {title1}
               </span>
@@ -179,7 +181,7 @@ function HeroGeometric({
             initial="hidden"
             animate="visible"
           >
-            <p className="mx-auto mb-8 max-w-xl px-4 text-base font-light leading-relaxed tracking-wide text-white/40 sm:text-lg md:text-xl">
+            <p className="mx-auto mb-12 max-w-4xl px-4 text-xl font-light leading-relaxed tracking-wide text-white/40 sm:text-2xl md:text-3xl">
               Crafting exceptional digital experiences through innovative design and
               cutting-edge technology.
             </p>

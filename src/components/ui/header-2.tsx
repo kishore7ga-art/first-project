@@ -2,16 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon";
 import { useScroll } from "@/components/ui/use-scroll";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "Features", href: "#features" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "Launch", href: "#launch" },
+  { label: "Features", href: "/#features" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "About Us", href: "/about" },
+  { label: "Testimonials", href: "/#testimonials" },
 ];
 
 export function Header() {
@@ -28,38 +29,39 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 mx-auto w-full max-w-5xl border-b border-transparent md:rounded-md md:border md:transition-all md:ease-out",
+        "sticky top-0 z-50 mx-auto w-full max-w-[95%] border-b border-transparent md:rounded-2xl md:border md:transition-all md:ease-out mt-4",
         {
-          "border-border bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/50 md:top-4 md:max-w-4xl md:shadow":
+          "border-white/10 bg-black/80 backdrop-blur-2xl md:top-8 md:max-w-[90%] md:shadow-2xl":
             scrolled && !open,
-          "bg-background/90": open,
+          "bg-black": open,
         },
       )}
     >
       <nav
         className={cn(
-          "flex h-14 w-full items-center justify-between px-4 md:h-12 md:transition-all md:ease-out",
-          { "md:px-2": scrolled },
+          "flex h-24 w-full items-center justify-between px-8 md:h-32 md:transition-all md:ease-out",
+          { "md:px-6": scrolled },
         )}
       >
-        <Link href="/" className="text-lg font-bold tracking-tight text-white md:text-foreground">
-          Sections
+        <Link href="/" className="flex items-center gap-4 text-3xl font-black tracking-tighter text-white md:text-4xl">
+          <Image src="/logo.png" alt="Zelmora Logo" width={64} height={64} className="rounded-xl" />
+          <span>Zelmora</span>
         </Link>
 
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           {links.map((link) => (
             <a
               key={link.label}
-              className={buttonVariants({ variant: "ghost" })}
+              className={cn(buttonVariants({ variant: "ghost" }), "text-xl font-bold px-6 py-4")}
               href={link.href}
             >
               {link.label}
             </a>
           ))}
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" size="lg" className="text-xl px-8 py-8 rounded-full">
             <Link href="/login">Sign In</Link>
           </Button>
-          <Button asChild>
+          <Button asChild size="lg" className="text-xl px-8 py-8 rounded-full">
             <Link href="/builder">Get Started</Link>
           </Button>
         </div>
