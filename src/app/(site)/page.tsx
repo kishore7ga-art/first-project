@@ -6,7 +6,6 @@ import { Button as NeonButton } from "@/components/ui/neon-button";
 import { CinematicFooter } from "@/components/ui/motion-footer";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 import StackFeatureSection from "@/components/ui/stack-feature-section";
-import { Component as Testimonials } from "@/components/ui/testimonial";
 
 const galleryImages = [
   "/gallery-jh.png",
@@ -34,13 +33,6 @@ export default function LandingPage() {
         <StackFeatureSection />
         <ArcGalleryHero images={galleryImages} />
         
-        <section className="py-40 text-center">
-          <h2 className="text-5xl font-bold text-white md:text-[8rem] tracking-tighter leading-none">Leadership Team</h2>
-          <p className="mt-8 text-white/60 text-2xl">The minds behind Zelmora</p>
-        </section>
-        
-        <Testimonials />
-
         {/* Builder Preview Section */}
         <section className="relative w-full bg-black py-32 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(129,140,248,0.1),transparent_70%)]" />
@@ -75,7 +67,6 @@ export default function LandingPage() {
                 {/* Reflection Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/5 pointer-events-none" />
               </div>
-              
               <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                 <div className="p-8 rounded-3xl border border-white/5 bg-white/5 backdrop-blur-sm transition-all hover:bg-white/10">
                   <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-6">
